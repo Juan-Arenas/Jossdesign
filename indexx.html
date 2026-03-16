@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Joss Design — Admin</title>
+<link rel="icon" type="image/png" href="Joss.png"/>
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --bg:#06060d;--surface:#0d0d17;--surface2:#12121e;--surface3:#181826;
+  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);
+  --accent:#c8ff57;--accent2:#7c5cfc;--text:#eeeef5;--muted:#565670;
+  --green:#22c55e;--yellow:#fbbf24;--red:#ef4444;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
+
+/* ── LOGIN ── */
+#login-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
+#login-gate.hidden{display:none}
+.gate-wrap{width:100%;max-width:380px}
+.gate-logo{text-align:center;margin-bottom:24px}
+.gate-logo-img{width:52px;height:52px;border-radius:14px;overflow:hidden;margin:0 auto 10px;background:var(--surface2)}
+.gate-logo-img img{width:100%;height:100%;object-fit:cover}
+.gate-logo-brand{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.1rem;color:var(--text)}
+.gate-logo-brand span{color:var(--accent)}
+.gate-logo-sub{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
+.gate-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.65)}
+.gate-head{background:linear-gradient(135deg,#09091a,#0f0f28 55%,#14083a);padding:24px 24px 18px;position:relative;overflow:hidden;text-align:center}
+.gate-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -30%,rgba(124,92,252,.55) 0%,transparent 65%)}
+.gate-icon{width:48px;height:48px;border-radius:13px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;position:relative;z-index:1}
+.gate-icon svg{width:20px;height:20px;color:#f87171}
+.gate-title{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1rem;position:relative;z-index:1}
+.gate-sub{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-top:2px;position:relative;z-index:1}
+.gate-body{padding:22px 22px 24px}
+.flabel{display:block;font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px}
+.finput{width:100%;padding:10px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:12px}
+.finput:focus{border-color:rgba(200,255,87,.38);box-shadow:0 0 0 3px rgba(200,255,87,.07)}
+.finput::placeholder{color:var(--muted)}
+.btn-main{width:100%;padding:12px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.86rem;letter-spacing:.04em;border:none;border-radius:11px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 18px rgba(200,255,87,.18)}
+.btn-main:hover{opacity:.86;transform:translateY(-1px)}
+.fmsg{margin-top:8px;padding:8px 11px;border-radius:8px;font-size:.76rem;display:none}
+.fmsg.err{background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.22);color:#f87171;display:block}
+.fmsg.ok{background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.22);color:#4ade80;display:block}
+
+/* ── ADMIN APP ── */
+#admin-app{display:none;min-height:100vh;flex-direction:column}
+#admin-app.on{display:flex}
+
+.top-bar{
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:0 28px;height:58px;display:flex;align-items:center;
+  justify-content:space-between;position:sticky;top:0;z-index:50;
+}
+.top-left{display:flex;align-items:center;gap:12px}
+.top-logo{width:30px;height:30px;border-radius:8px;overflow:hidden;background:var(--surface2)}
+.top-logo img{width:100%;height:100%;object-fit:cover}
+.top-brand{font-family:'Montserrat',sans-serif;font-weight:900;font-size:.95rem;color:var(--text)}
+.top-brand span{color:var(--accent)}
+.adm-badge{padding:3px 10px;border-radius:999px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.24);font-size:.6rem;font-weight:700;color:#f87171;letter-spacing:.08em;text-transform:uppercase}
+.top-time{font-size:.7rem;color:var(--muted)}
+.btn-out{padding:7px 14px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:9px;font-size:.74rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:5px}
+.btn-out:hover{border-color:#ff6b6b;color:#ff6b6b}
+.btn-out svg{width:12px;height:12px}
+
+.body{padding:26px;flex:1}
+.body-inner{max-width:1100px;margin:0 auto}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:26px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 20px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:2px 0 0 2px}
+.sc.sy::before{background:var(--yellow)}.sc.sg::before{background:var(--green)}.sc.sp::before{background:var(--accent2)}.sc.sa::before{background:var(--accent)}
+.sc-n{font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:900;color:var(--text)}
+.sc-l{font-size:.65rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.07em}
+
+/* QUICK APPROVE */
+.quick-box{
+  background:linear-gradient(135deg,rgba(124,92,252,.09),rgba(200,255,87,.05));
+  border:1px solid rgba(124,92,252,.22);border-radius:16px;
+  padding:18px 22px;margin-bottom:26px;
+}
+.qb-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.88rem;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.qb-title svg{color:var(--accent2);width:17px;height:17px}
+.qb-sub{font-size:.75rem;color:var(--muted);margin-bottom:14px}
+.qb-row{display:flex;gap:9px;align-items:flex-start;flex-wrap:wrap}
+.qb-inp{flex:1;min-width:180px;padding:10px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.04em;outline:none;transition:border-color .2s,box-shadow .2s}
+.qb-inp:focus{border-color:rgba(200,255,87,.38);box-shadow:0 0 0 3px rgba(200,255,87,.07)}
+.qb-inp::placeholder{color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
+.btn-qa{padding:10px 20px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:.04em;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 3px 14px rgba(200,255,87,.16)}
+.btn-qa:hover{opacity:.86;transform:translateY(-1px)}
+.btn-qa svg{width:14px;height:14px}
+.qb-msg{width:100%;margin-top:5px}
+
+/* MANUAL USER BOX */
+.manual-user-box{
+  background:linear-gradient(135deg,rgba(34,197,94,.07),rgba(200,255,87,.04));
+  border:1px solid rgba(34,197,94,.2);border-radius:16px;
+  padding:18px 22px;margin-bottom:26px;
+}
+.mub-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.88rem;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.mub-title svg{color:var(--green);width:17px;height:17px}
+.mub-sub{font-size:.75rem;color:var(--muted);margin-bottom:14px}
+.mub-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:flex-end;flex-wrap:wrap}
+.mub-field{display:flex;flex-direction:column;gap:4px}
+.mub-label{font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
+.mub-inp{padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s;width:100%}
+.mub-inp:focus{border-color:rgba(34,197,94,.4);box-shadow:0 0 0 3px rgba(34,197,94,.07)}
+.mub-inp::placeholder{color:var(--muted)}
+.btn-add-user{padding:10px 18px;background:var(--green);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.81rem;letter-spacing:.04em;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 3px 14px rgba(34,197,94,.2)}
+.btn-add-user:hover{opacity:.86;transform:translateY(-1px)}
+.btn-add-user svg{width:14px;height:14px}
+.mub-msg{margin-top:5px}
+
+/* GRID */
+.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
+.card.full{grid-column:1/-1}
+.card-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.75rem;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:7px}
+.dot{width:7px;height:7px;border-radius:50%}
+.dy{background:var(--yellow)}.dg{background:var(--green)}.dp{background:var(--accent2)}.da{background:var(--accent)}
+
+/* PENDING */
+.pi-list{display:flex;flex-direction:column;gap:8px}
+.pi-item{
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:12px 14px;
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  transition:border-color .2s;
+}
+.pi-item:hover{border-color:rgba(200,255,87,.13)}
+.pi-l{flex:1;min-width:0}
+.pi-em{font-weight:600;font-size:.83rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pi-name{font-size:.68rem;color:var(--muted);margin-top:1px}
+.pi-date{font-size:.64rem;color:var(--muted);margin-top:1px}
+.pi-order{font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;color:var(--accent2);margin-top:3px}
+.pi-method{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);color:#a78bfa;margin-top:3px;display:inline-block}
+.pi-acts{display:flex;gap:5px;flex-shrink:0}
+.bapp{padding:6px 12px;border-radius:8px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.26);display:flex;align-items:center;gap:4px;transition:background .2s}
+.bapp:hover{background:rgba(34,197,94,.22)}
+.bapp svg{width:10px;height:10px}
+.brej{padding:6px 9px;border-radius:8px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(239,68,68,.09);color:#f87171;border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;gap:4px;transition:background .2s}
+.brej:hover{background:rgba(239,68,68,.18)}
+.brej svg{width:10px;height:10px}
+
+/* APPROVED */
+.apr-list{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto}
+.apr-list::-webkit-scrollbar{width:3px}
+.apr-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.apr-item{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface2);border-radius:10px}
+.chk{width:18px;height:18px;border-radius:50%;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.24);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.chk svg{width:9px;height:9px;color:#4ade80}
+.apr-em{flex:1;font-size:.79rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.apr-badge{font-size:.6rem;padding:2px 7px;border-radius:999px;font-weight:700;flex-shrink:0}
+.apr-badge.manual{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80}
+.apr-badge.izipay{background:rgba(227,6,19,.1);border:1px solid rgba(227,6,19,.2);color:#f87171}
+.apr-badge.yape{background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);color:#a78bfa}
+.apr-badge.plin{background:rgba(0,188,212,.1);border:1px solid rgba(0,188,212,.2);color:#22d3ee}
+.apr-badge.paypal{background:rgba(0,156,222,.1);border:1px solid rgba(0,156,222,.2);color:#60a5fa}
+.apr-dt{font-size:.65rem;color:var(--muted);flex-shrink:0}
+.brev{padding:4px 10px;border-radius:7px;background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:.63rem;cursor:pointer;transition:border-color .2s,color .2s}
+.brev:hover{border-color:var(--red);color:var(--red)}
+
+/* AFFILIATES */
+.aff-item{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--surface2);border-radius:10px;margin-bottom:7px}
+.aff-code{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.84rem;color:var(--accent2)}
+.aff-uses{font-size:.68rem;color:var(--muted)}
+.btn-add-aff{width:100%;padding:9px;background:rgba(124,92,252,.08);border:1px dashed rgba(124,92,252,.28);color:var(--accent2);border-radius:9px;font-size:.76rem;font-weight:600;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:5px}
+.btn-add-aff:hover{background:rgba(124,92,252,.16)}
+
+/* LOG */
+.log-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
+.log-list::-webkit-scrollbar{width:3px}
+.log-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+.log-item{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--surface2);border-radius:9px;font-size:.74rem}
+.ld{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.ld.lg{background:var(--green)}.ld.lr{background:var(--red)}.ld.ly{background:var(--yellow)}
+.lt{flex:1;color:var(--text)}.ltime{font-size:.63rem;color:var(--muted);flex-shrink:0}
+
+/* CONFIG */
+.cfg-row{display:flex;gap:9px;align-items:flex-end;margin-bottom:10px}
+.cfg-row .finput{margin-bottom:0;flex:1}
+.btn-save{padding:10px 16px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.8rem;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
+.btn-save:hover{opacity:.86}
+.btn-save svg{width:12px;height:12px}
+
+/* EMPTY */
+.empty-st{text-align:center;padding:24px;color:var(--muted);font-size:.77rem}
+.empty-st svg{width:24px;height:24px;opacity:.26;margin-bottom:7px;display:block;margin:0 auto 7px}
+
+/* TOAST */
+.toast{position:fixed;bottom:22px;right:22px;z-index:9999;padding:11px 17px;border-radius:12px;font-size:.8rem;font-weight:600;transform:translateY(16px);opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:7px}
+.toast.ok-t{background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.26);color:#4ade80}
+.toast.err-t{background:rgba(239,68,68,.13);border:1px solid rgba(239,68,68,.26);color:#f87171}
+.toast.show{transform:translateY(0);opacity:1}
+.toast svg{width:14px;height:14px;flex-shrink:0}
+
+@media(max-width:700px){
+  .stats-row{grid-template-columns:1fr 1fr}
+  .main-grid{grid-template-columns:1fr}
+  .card.full{grid-column:1}
+  .body{padding:14px}
+  .mub-grid{grid-template-columns:1fr 1fr}
+  .qb-row{flex-direction:column}
+  .qb-inp,.btn-qa{width:100%;justify-content:center}
+}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+
+<!-- LOGIN -->
+<div id="login-gate">
+ <div class="gate-wrap">
+  <div class="gate-logo">
+   <div class="gate-logo-img"><img src="Joss.png" alt="Joss" onerror="this.parentElement.style.display='none'"/></div>
+   <div class="gate-logo-brand">JOSS <span>DESIGN</span></div>
+   <div class="gate-logo-sub">Panel de Administración</div>
+  </div>
+  <div class="gate-card">
+   <div class="gate-head">
+    <div class="gate-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+    <div class="gate-title">Acceso Seguro</div>
+    <div class="gate-sub">Solo administradores</div>
+   </div>
+   <div class="gate-body">
+    <label class="flabel">Correo de administrador</label>
+    <input class="finput" id="g-email" type="email" placeholder="admin@jossdesign.com"/>
+    <label class="flabel">Contraseña</label>
+    <input class="finput" id="g-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')gateLogin()"/>
+    <button class="btn-main" onclick="gateLogin()">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+     Ingresar al panel
+    </button>
+    <div class="fmsg" id="g-msg"></div>
+   </div>
+  </div>
+ </div>
+</div>
+
+<!-- ADMIN APP -->
+<div id="admin-app">
+ <div class="top-bar">
+  <div class="top-left">
+   <div class="top-logo"><img src="Joss.png" alt="" onerror="this.parentElement.style.display='none'"/></div>
+   <div class="top-brand">JOSS <span>DESIGN</span></div>
+   <span class="adm-badge">Admin</span>
+   <span class="top-time" id="top-time"></span>
+  </div>
+  <button class="btn-out" onclick="gateLogout()">
+   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+   Salir
+  </button>
+ </div>
+
+ <div class="body">
+  <div class="body-inner">
+
+   <!-- STATS -->
+   <div class="stats-row" id="stats-row"></div>
+
+   <!-- QUICK APPROVE BY ORDER -->
+   <div class="quick-box">
+    <div class="qb-title">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+     Aprobar por número de orden
+    </div>
+    <div class="qb-sub">Escribe el número de orden del comprobante y activa el acceso inmediatamente.</div>
+    <div class="qb-row">
+     <input class="qb-inp" id="qb-order" type="text" placeholder="Ej: JD-M5X2A-K9PQ" onkeydown="if(event.key==='Enter')quickApprove()"/>
+     <button class="btn-qa" onclick="quickApprove()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+      Aprobar acceso
+     </button>
+    </div>
+    <div class="fmsg qb-msg" id="qb-msg"></div>
+   </div>
+
+   <!-- MANUAL USER ADD -->
+   <div class="manual-user-box">
+    <div class="mub-title">
+     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+     Agregar usuario manualmente
+    </div>
+    <div class="mub-sub">Para personas que pagaron fuera de la plataforma o a quienes quieras dar acceso directo.</div>
+    <div class="mub-grid">
+     <div class="mub-field">
+      <div class="mub-label">Correo electrónico</div>
+      <input class="mub-inp" id="mu-email" type="email" placeholder="usuario@correo.com"/>
+     </div>
+     <div class="mub-field">
+      <div class="mub-label">Contraseña temporal</div>
+      <input class="mub-inp" id="mu-pass" type="text" placeholder="Mín. 6 caracteres"/>
+     </div>
+     <div class="mub-field">
+      <div class="mub-label">Nombre (opcional)</div>
+      <input class="mub-inp" id="mu-name" type="text" placeholder="Nombre completo"/>
+     </div>
+     <button class="btn-add-user" onclick="addManualUser()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+      Dar acceso
+     </button>
+    </div>
+    <div class="fmsg mub-msg" id="mu-msg"></div>
+   </div>
+
+   <!-- MAIN GRID -->
+   <div class="main-grid" id="main-grid"></div>
+
+  </div>
+ </div>
+</div>
+
+<script>
+// ─── DB (same keys as index.html) ───────────────────────────
+const DB={
+  get:k=>{try{return JSON.parse(localStorage.getItem('jd7_'+k))}catch{return null}},
+  set:(k,v)=>localStorage.setItem('jd7_'+k,JSON.stringify(v))
+};
+const getUsers  =()=>DB.get('u')||{};
+const getPending=()=>DB.get('p')||[];
+const getAffs   =()=>DB.get('a')||{JOSS10:0,DESIGN20:0};
+const getLog    =()=>DB.get('log')||[];
+const saveUsers  =v=>DB.set('u',v);
+const savePending=v=>DB.set('p',v);
+const saveAffs   =v=>DB.set('a',v);
+const saveLog    =v=>DB.set('log',v);
+
+(()=>{const u=getUsers();if(!u['admin@jossdesign.com']){u['admin@jossdesign.com']={pass:'admin1234',role:'admin',since:'-'};saveUsers(u);}})();
+
+function addLog(txt,type='lg'){const l=getLog();l.unshift({txt,type,time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});if(l.length>60)l.length=60;saveLog(l);}
+
+// ─── TOAST ───────────────────────────────────────────────────
+function showToast(txt,err=false){
+  const t=document.getElementById('toast');
+  t.innerHTML=(err
+    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+  )+txt;
+  t.className='toast '+(err?'err-t':'ok-t');
+  void t.offsetWidth;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),3200);
+}
+
+// ─── LOGIN ───────────────────────────────────────────────────
+function gateLogin(){
+  const e=document.getElementById('g-email').value.trim().toLowerCase();
+  const p=document.getElementById('g-pass').value;
+  const m=document.getElementById('g-msg');m.className='fmsg';
+  if(!e||!p){m.className='fmsg err';m.textContent='Completa los campos.';return;}
+  const u=getUsers();
+  if(!u[e]||u[e].role!=='admin'||u[e].pass!==p){m.className='fmsg err';m.textContent='Credenciales incorrectas.';return;}
+  document.getElementById('login-gate').classList.add('hidden');
+  document.getElementById('admin-app').classList.add('on');
+  renderAll();startClock();
+}
+function gateLogout(){
+  document.getElementById('admin-app').classList.remove('on');
+  document.getElementById('login-gate').classList.remove('hidden');
+}
+function startClock(){
+  const el=document.getElementById('top-time');
+  const tick=()=>el.textContent=new Date().toLocaleString('es',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
+  tick();setInterval(tick,30000);
+}
+
+// ─── QUICK APPROVE ───────────────────────────────────────────
+function quickApprove(){
+  const order=document.getElementById('qb-order').value.trim().toUpperCase();
+  const m=document.getElementById('qb-msg');m.className='fmsg';
+  if(!order){m.className='fmsg err';m.textContent='Escribe el número de orden.';return;}
+  const pending=getPending();
+  const idx=pending.findIndex(p=>p.order&&p.order.toUpperCase()===order);
+  if(idx===-1){m.className='fmsg err';m.textContent='Número de orden no encontrado.';return;}
+  const p=pending[idx];const u=getUsers();
+  u[p.email]={pass:p.pass,role:'approved',since:new Date().toLocaleDateString('es'),method:p.method,affiliate:p.affiliate,order:p.order,name:p.name};
+  saveUsers(u);pending.splice(idx,1);savePending(pending);
+  addLog('Aprobado por orden '+p.order+': '+p.email,'lg');
+  document.getElementById('qb-order').value='';
+  m.className='fmsg ok';m.textContent='✅ Acceso activado para '+p.email;
+  showToast('Acceso activado: '+p.email);renderAll();
+  setTimeout(()=>{m.className='fmsg';},5000);
+}
+
+// ─── ADD MANUAL USER ─────────────────────────────────────────
+function addManualUser(){
+  const email=document.getElementById('mu-email').value.trim().toLowerCase();
+  const pass =document.getElementById('mu-pass').value.trim();
+  const name =document.getElementById('mu-name').value.trim();
+  const m=document.getElementById('mu-msg');m.className='fmsg';
+
+  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
+    return showMuMsg('Ingresa un correo válido.','err');
+  if(pass.length<6)
+    return showMuMsg('La contraseña debe tener al menos 6 caracteres.','err');
+
+  const users=getUsers();
+  if(users[email]&&users[email].role==='approved')
+    return showMuMsg('Este correo ya tiene acceso activo.','err');
+
+  users[email]={pass,role:'approved',since:new Date().toLocaleDateString('es'),method:'manual',name:name||email,order:'MANUAL-'+Date.now().toString(36).toUpperCase()};
+  saveUsers(users);
+  // If they had a pending request, remove it
+  const arr=getPending().filter(p=>p.email!==email);savePending(arr);
+
+  addLog('Usuario manual: '+email+(name?' ('+name+')':''),'lg');
+  showToast('Acceso dado a '+email);
+  document.getElementById('mu-email').value='';
+  document.getElementById('mu-pass').value='';
+  document.getElementById('mu-name').value='';
+  showMuMsg('✅ Acceso activado para '+email+'. Ya puede ingresar con la contraseña indicada.','ok');
+  renderAll();
+  setTimeout(()=>{document.getElementById('mu-msg').className='fmsg';},5000);
+}
+function showMuMsg(txt,type){const m=document.getElementById('mu-msg');m.className='fmsg '+type;m.textContent=txt;}
+
+// ─── RENDER ──────────────────────────────────────────────────
+function renderAll(){renderStats();renderGrid();}
+
+function renderStats(){
+  const u=getUsers(),p=getPending(),a=getAffs();
+  const apr=Object.entries(u).filter(([,v])=>v.role==='approved'&&v.pass!=='admin1234').length;
+  document.getElementById('stats-row').innerHTML=`
+    <div class="sc sy"><div class="sc-n">${p.length}</div><div class="sc-l">Pendientes</div></div>
+    <div class="sc sg"><div class="sc-n">${apr}</div><div class="sc-l">Con Acceso</div></div>
+    <div class="sc sp"><div class="sc-n">${Object.keys(a).length}</div><div class="sc-l">Afiliados</div></div>
+    <div class="sc sa"><div class="sc-n">${apr+p.length}</div><div class="sc-l">Total</div></div>
+  `;
+}
+
+function renderGrid(){
+  const users=getUsers(),pending=getPending(),affs=getAffs(),log=getLog();
+  const approved=Object.entries(users).filter(([,u])=>u.role==='approved');
+  const mL={izipay:'Izipay',card:'Visa',paypal:'PayPal',yape:'Yape',plin:'Plin',manual:'Manual'};
+  const chk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="9" height="9"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  const pendHTML=pending.length===0
+    ?'<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><polyline points="20 6 9 17 4 12"/></svg><div>Sin solicitudes pendientes</div></div>'
+    :pending.map((p,i)=>`
+      <div class="pi-item">
+        <div class="pi-l">
+          <div class="pi-em">${p.email}</div>
+          ${p.name?'<div class="pi-name">'+p.name+'</div>':''}
+          <div class="pi-date">${p.date}</div>
+          <div class="pi-order">${p.order||'—'}</div>
+          <span class="pi-method">${mL[p.method]||p.method}${p.affiliate?' · '+p.affiliate:''}</span>
+        </div>
+        <div class="pi-acts">
+          <button class="bapp" onclick="approvePending(${i})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
+            Aprobar
+          </button>
+          <button class="brej" onclick="rejectPending(${i})">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+          </button>
+        </div>
+      </div>`).join('');
+
+  const filteredApproved=approved.filter(([e])=>e!=='admin@jossdesign.com');
+  const aprHTML=filteredApproved.length===0
+    ?'<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><div>Ningún usuario aprobado aún</div></div>'
+    :filteredApproved.map(([email,u])=>{
+      const m=u.method||'—';
+      const badgeClass=m==='manual'?'manual':m==='izipay'?'izipay':m==='yape'?'yape':m==='plin'?'plin':m==='paypal'?'paypal':'manual';
+      return`<div class="apr-item">
+        <div class="chk">${chk}</div>
+        <div class="apr-em">${email}</div>
+        <span class="apr-badge ${badgeClass}">${mL[m]||m}</span>
+        <div class="apr-dt">${u.since||'—'}</div>
+        <button class="brev" onclick="revokeAccess('${email}')">Revocar</button>
+      </div>`;
+    }).join('');
+
+  const affHTML=Object.entries(affs).map(([c,n])=>`
+    <div class="aff-item">
+      <span class="aff-code">${c}</span>
+      <span class="aff-uses">${n} uso${n!==1?'s':''}</span>
+      <button class="brev" onclick="delAff('${c}')">Eliminar</button>
+    </div>`).join('');
+
+  const logHTML=log.length===0
+    ?'<div class="empty-st"><div>Sin actividad reciente</div></div>'
+    :log.slice(0,12).map(l=>`<div class="log-item"><div class="ld ${l.type}"></div><div class="lt">${l.txt}</div><div class="ltime">${l.time}</div></div>`).join('');
+
+  document.getElementById('main-grid').innerHTML=`
+    <div class="card full">
+      <div class="card-title"><span class="dot dy"></span>Solicitudes pendientes (${pending.length})</div>
+      <div class="pi-list">${pendHTML}</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dg"></span>Usuarios con acceso (${filteredApproved.length})</div>
+      <div class="apr-list">${aprHTML}</div>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot dp"></span>Códigos de afiliado</div>
+      ${affHTML}
+      <button class="btn-add-aff" onclick="addAff()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Agregar código
+      </button>
+    </div>
+    <div class="card">
+      <div class="card-title"><span class="dot da"></span>Actividad reciente</div>
+      <div class="log-list">${logHTML}</div>
+    </div>
+    <div class="card full">
+      <div class="card-title">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+        Configuración
+      </div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div>
+          <label class="flabel" style="margin-bottom:5px">Precio del curso (se muestra en el checkout)</label>
+          <div class="cfg-row">
+            <input class="finput" id="price-inp" type="text" placeholder="Ej: $0.01 USD" value="${DB.get('price')||'$0.01'}"/>
+            <button class="btn-save" onclick="savePrice()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
+              Guardar
+            </button>
+          </div>
+          <div class="fmsg" id="price-msg"></div>
+        </div>
+        <div>
+          <label class="flabel" style="margin-bottom:5px">Cambiar contraseña admin</label>
+          <div class="cfg-row">
+            <input class="finput" id="new-pass-inp" type="password" placeholder="Nueva contraseña"/>
+            <button class="btn-save" onclick="changeAdminPass()" style="background:var(--accent2);box-shadow:none">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+              Cambiar
+            </button>
+          </div>
+          <div class="fmsg" id="pass-msg"></div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+// ─── ACTIONS ─────────────────────────────────────────────────
+function approvePending(i){
+  const p=getPending()[i];const u=getUsers();
+  u[p.email]={pass:p.pass,role:'approved',since:new Date().toLocaleDateString('es'),method:p.method,affiliate:p.affiliate,order:p.order,name:p.name};
+  saveUsers(u);const arr=getPending();arr.splice(i,1);savePending(arr);
+  addLog('Aprobado: '+p.email,'lg');showToast('Acceso activado: '+p.email);renderAll();
+}
+function rejectPending(i){
+  const p=getPending()[i];
+  if(!confirm('¿Rechazar solicitud de '+p.email+'?'))return;
+  const arr=getPending();arr.splice(i,1);savePending(arr);
+  // Remove pending status from users
+  const u=getUsers();if(u[p.email]&&u[p.email].role==='pending'){delete u[p.email];saveUsers(u);}
+  addLog('Rechazado: '+p.email,'lr');showToast('Solicitud rechazada',true);renderAll();
+}
+function revokeAccess(email){
+  if(!confirm('¿Revocar acceso de '+email+'?'))return;
+  const u=getUsers();delete u[email];saveUsers(u);
+  addLog('Acceso revocado: '+email,'lr');showToast('Revocado',true);renderAll();
+}
+function addAff(){
+  const c=prompt('Nuevo código de afiliado (mayúsculas, sin espacios):');
+  if(!c)return;const cl=c.trim().toUpperCase().replace(/\s+/g,'');if(!cl)return;
+  const a=getAffs();a[cl]=0;saveAffs(a);
+  addLog('Afiliado creado: '+cl,'ly');showToast('Código '+cl+' creado');renderAll();
+}
+function delAff(c){
+  if(!confirm('¿Eliminar código '+c+'?'))return;
+  const a=getAffs();delete a[c];saveAffs(a);
+  addLog('Afiliado eliminado: '+c,'ly');showToast('Eliminado',true);renderAll();
+}
+function savePrice(){
+  const v=document.getElementById('price-inp').value.trim();
+  DB.set('price',v);
+  const m=document.getElementById('price-msg');m.className='fmsg ok';m.textContent='✓ Precio guardado: '+v;
+  addLog('Precio: '+v,'ly');showToast('Precio guardado');
+  setTimeout(()=>{m.className='fmsg';},3000);
+}
+function changeAdminPass(){
+  const v=document.getElementById('new-pass-inp').value.trim();
+  if(v.length<6){const m=document.getElementById('pass-msg');m.className='fmsg err';m.textContent='Mínimo 6 caracteres.';return;}
+  const u=getUsers();u['admin@jossdesign.com'].pass=v;saveUsers(u);
+  const m=document.getElementById('pass-msg');m.className='fmsg ok';m.textContent='✓ Contraseña actualizada.';
+  addLog('Contraseña admin cambiada','ly');showToast('Contraseña actualizada');
+  document.getElementById('new-pass-inp').value='';
+  setTimeout(()=>{m.className='fmsg';},3000);
+}
+</script>
+</body>
+</html>
