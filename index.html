@@ -3,587 +3,2441 @@
 <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-<title>Joss Design — Admin</title>
+<title>Joss Design — Curso</title>
 <link rel="icon" type="image/png" href="Joss.png"/>
 <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<!-- Izipay SDK -->
+<script src="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/kr-payment-form.min.js"
+  kr-public-key="19131378:publickey_FCreyHUK1syQokKpjc9lFXmSsWR1tdP1qOMnaekvTBLeS"
+  kr-language="es-PE"
+  kr-post-url-success="about:blank"></script>
+<link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/classic-reset.min.css"/>
+<link rel="stylesheet" href="https://static.micuentaweb.pe/static/js/krypton-client/V4.0/stable/classic.min.css"/>
 <style>
-:root{
-  --bg:#06060d;--surface:#0d0d17;--surface2:#12121e;--surface3:#181826;
-  --border:rgba(255,255,255,.06);--border2:rgba(255,255,255,.11);
-  --accent:#c8ff57;--accent2:#7c5cfc;--text:#eeeef5;--muted:#565670;
-  --green:#22c55e;--yellow:#fbbf24;--red:#ef4444;
+/* ═══════════════════════════════
+   VARIABLES
+═══════════════════════════════ */
+:root {
+  --bg: #08080f;
+  --s1: #0f0f1a;
+  --s2: #141421;
+  --s3: #1a1a2a;
+  --b1: rgba(255,255,255,.06);
+  --b2: rgba(255,255,255,.12);
+  --ac: #c8ff57;
+  --ac2: #7c5cfc;
+  --tx: #ededf5;
+  --mu: #606078;
+  --gr: #22c55e;
+  --re: #ef4444;
+  --ye: #fbbf24;
+  --sw: 270px;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh}
-
-/* ── LOGIN ── */
-#login-gate{position:fixed;inset:0;z-index:999;background:var(--bg);display:flex;align-items:center;justify-content:center;padding:20px}
-#login-gate.hidden{display:none}
-.gate-wrap{width:100%;max-width:380px}
-.gate-logo{text-align:center;margin-bottom:24px}
-.gate-logo-img{width:52px;height:52px;border-radius:14px;overflow:hidden;margin:0 auto 10px;background:var(--surface2)}
-.gate-logo-img img{width:100%;height:100%;object-fit:cover}
-.gate-logo-brand{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1.1rem;color:var(--text)}
-.gate-logo-brand span{color:var(--accent)}
-.gate-logo-sub{font-size:.67rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-top:2px}
-.gate-card{background:var(--surface);border:1px solid var(--border2);border-radius:20px;overflow:hidden;box-shadow:0 32px 80px rgba(0,0,0,.65)}
-.gate-head{background:linear-gradient(135deg,#09091a,#0f0f28 55%,#14083a);padding:24px 24px 18px;position:relative;overflow:hidden;text-align:center}
-.gate-head::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% -30%,rgba(124,92,252,.55) 0%,transparent 65%)}
-.gate-icon{width:48px;height:48px;border-radius:13px;background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.22);display:flex;align-items:center;justify-content:center;margin:0 auto 10px;position:relative;z-index:1}
-.gate-icon svg{width:20px;height:20px;color:#f87171}
-.gate-title{font-family:'Montserrat',sans-serif;font-weight:900;font-size:1rem;position:relative;z-index:1}
-.gate-sub{font-size:.66rem;color:var(--muted);text-transform:uppercase;letter-spacing:.09em;margin-top:2px;position:relative;z-index:1}
-.gate-body{padding:22px 22px 24px}
-.flabel{display:block;font-size:.63rem;font-weight:700;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:5px}
-.finput{width:100%;padding:10px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.86rem;outline:none;transition:border-color .2s,box-shadow .2s;margin-bottom:12px}
-.finput:focus{border-color:rgba(200,255,87,.38);box-shadow:0 0 0 3px rgba(200,255,87,.07)}
-.finput::placeholder{color:var(--muted)}
-.btn-main{width:100%;padding:12px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.86rem;letter-spacing:.04em;border:none;border-radius:11px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;justify-content:center;gap:7px;box-shadow:0 4px 18px rgba(200,255,87,.18)}
-.btn-main:hover{opacity:.86;transform:translateY(-1px)}
-.fmsg{margin-top:8px;padding:8px 11px;border-radius:8px;font-size:.76rem;display:none}
-.fmsg.err{background:rgba(239,68,68,.09);border:1px solid rgba(239,68,68,.22);color:#f87171;display:block}
-.fmsg.ok{background:rgba(34,197,94,.09);border:1px solid rgba(34,197,94,.22);color:#4ade80;display:block}
-
-/* ── ADMIN APP ── */
-#admin-app{display:none;min-height:100vh;flex-direction:column}
-#admin-app.on{display:flex}
-
-.top-bar{
-  background:var(--surface);border-bottom:1px solid var(--border);
-  padding:0 28px;height:58px;display:flex;align-items:center;
-  justify-content:space-between;position:sticky;top:0;z-index:50;
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--tx);
+  min-height: 100vh;
 }
-.top-left{display:flex;align-items:center;gap:12px}
-.top-logo{width:30px;height:30px;border-radius:8px;overflow:hidden;background:var(--surface2)}
-.top-logo img{width:100%;height:100%;object-fit:cover}
-.top-brand{font-family:'Montserrat',sans-serif;font-weight:900;font-size:.95rem;color:var(--text)}
-.top-brand span{color:var(--accent)}
-.adm-badge{padding:3px 10px;border-radius:999px;background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.24);font-size:.6rem;font-weight:700;color:#f87171;letter-spacing:.08em;text-transform:uppercase}
-.top-time{font-size:.7rem;color:var(--muted)}
-.btn-out{padding:7px 14px;background:transparent;border:1px solid var(--border2);color:var(--muted);border-radius:9px;font-size:.74rem;font-weight:600;cursor:pointer;font-family:'DM Sans',sans-serif;transition:border-color .2s,color .2s;display:flex;align-items:center;gap:5px}
-.btn-out:hover{border-color:#ff6b6b;color:#ff6b6b}
-.btn-out svg{width:12px;height:12px}
 
-.body{padding:26px;flex:1}
-.body-inner{max-width:1100px;margin:0 auto}
-
-/* STATS */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:13px;margin-bottom:26px}
-.sc{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:17px 20px;position:relative;overflow:hidden}
-.sc::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;border-radius:2px 0 0 2px}
-.sc.sy::before{background:var(--yellow)}.sc.sg::before{background:var(--green)}.sc.sp::before{background:var(--accent2)}.sc.sa::before{background:var(--accent)}
-.sc-n{font-family:'Montserrat',sans-serif;font-size:2rem;font-weight:900;color:var(--text)}
-.sc-l{font-size:.65rem;color:var(--muted);margin-top:3px;text-transform:uppercase;letter-spacing:.07em}
-
-/* QUICK APPROVE */
-.quick-box{
-  background:linear-gradient(135deg,rgba(124,92,252,.09),rgba(200,255,87,.05));
-  border:1px solid rgba(124,92,252,.22);border-radius:16px;
-  padding:18px 22px;margin-bottom:26px;
+/* ═══════════════════════════════
+   LAYOUT — Sidebar + Main
+═══════════════════════════════ */
+.layout {
+  display: flex;
+  min-height: 100vh;
 }
-.qb-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.88rem;margin-bottom:3px;display:flex;align-items:center;gap:7px}
-.qb-title svg{color:var(--accent2);width:17px;height:17px}
-.qb-sub{font-size:.75rem;color:var(--muted);margin-bottom:14px}
-.qb-row{display:flex;gap:9px;align-items:flex-start;flex-wrap:wrap}
-.qb-inp{flex:1;min-width:180px;padding:10px 13px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'Montserrat',sans-serif;font-size:.88rem;font-weight:700;letter-spacing:.04em;outline:none;transition:border-color .2s,box-shadow .2s}
-.qb-inp:focus{border-color:rgba(200,255,87,.38);box-shadow:0 0 0 3px rgba(200,255,87,.07)}
-.qb-inp::placeholder{color:var(--muted);font-weight:400;font-family:'DM Sans',sans-serif}
-.btn-qa{padding:10px 20px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.82rem;letter-spacing:.04em;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 3px 14px rgba(200,255,87,.16)}
-.btn-qa:hover{opacity:.86;transform:translateY(-1px)}
-.btn-qa svg{width:14px;height:14px}
-.qb-msg{width:100%;margin-top:5px}
 
-/* MANUAL USER BOX */
-.manual-user-box{
-  background:linear-gradient(135deg,rgba(34,197,94,.07),rgba(200,255,87,.04));
-  border:1px solid rgba(34,197,94,.2);border-radius:16px;
-  padding:18px 22px;margin-bottom:26px;
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: var(--sw);
+  min-height: 100vh;
+  background: var(--s1);
+  border-right: 1px solid var(--b1);
+  display: flex;
+  flex-direction: column;
+  position: fixed;
+  top: 0; left: 0; bottom: 0;
+  z-index: 100;
+  overflow-y: auto;
+  transition: transform .3s ease;
 }
-.mub-title{font-family:'Montserrat',sans-serif;font-weight:800;font-size:.88rem;margin-bottom:3px;display:flex;align-items:center;gap:7px}
-.mub-title svg{color:var(--green);width:17px;height:17px}
-.mub-sub{font-size:.75rem;color:var(--muted);margin-bottom:14px}
-.mub-grid{display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:8px;align-items:flex-end;flex-wrap:wrap}
-.mub-field{display:flex;flex-direction:column;gap:4px}
-.mub-label{font-size:.62rem;font-weight:700;color:var(--muted);letter-spacing:.08em;text-transform:uppercase}
-.mub-inp{padding:10px 12px;background:var(--surface2);border:1px solid var(--border2);border-radius:10px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:.85rem;outline:none;transition:border-color .2s;width:100%}
-.mub-inp:focus{border-color:rgba(34,197,94,.4);box-shadow:0 0 0 3px rgba(34,197,94,.07)}
-.mub-inp::placeholder{color:var(--muted)}
-.btn-add-user{padding:10px 18px;background:var(--green);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.81rem;letter-spacing:.04em;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s,transform .15s;display:flex;align-items:center;gap:6px;white-space:nowrap;box-shadow:0 3px 14px rgba(34,197,94,.2)}
-.btn-add-user:hover{opacity:.86;transform:translateY(-1px)}
-.btn-add-user svg{width:14px;height:14px}
-.mub-msg{margin-top:5px}
 
-/* GRID */
-.main-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}
-.card{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:20px}
-.card.full{grid-column:1/-1}
-.card-title{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.75rem;color:var(--muted);letter-spacing:.09em;text-transform:uppercase;margin-bottom:13px;display:flex;align-items:center;gap:7px}
-.dot{width:7px;height:7px;border-radius:50%}
-.dy{background:var(--yellow)}.dg{background:var(--green)}.dp{background:var(--accent2)}.da{background:var(--accent)}
-
-/* PENDING */
-.pi-list{display:flex;flex-direction:column;gap:8px}
-.pi-item{
-  background:var(--surface2);border:1px solid var(--border);
-  border-radius:12px;padding:12px 14px;
-  display:flex;align-items:center;justify-content:space-between;gap:10px;
-  transition:border-color .2s;
+.sb-logo {
+  padding: 22px 18px 16px;
+  border-bottom: 1px solid var(--b1);
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
-.pi-item:hover{border-color:rgba(200,255,87,.13)}
-.pi-l{flex:1;min-width:0}
-.pi-em{font-weight:600;font-size:.83rem;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.pi-name{font-size:.68rem;color:var(--muted);margin-top:1px}
-.pi-date{font-size:.64rem;color:var(--muted);margin-top:1px}
-.pi-order{font-family:'Montserrat',sans-serif;font-size:.7rem;font-weight:700;color:var(--accent2);margin-top:3px}
-.pi-method{font-size:.62rem;font-weight:700;padding:2px 8px;border-radius:999px;background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);color:#a78bfa;margin-top:3px;display:inline-block}
-.pi-acts{display:flex;gap:5px;flex-shrink:0}
-.bapp{padding:6px 12px;border-radius:8px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(34,197,94,.12);color:#4ade80;border:1px solid rgba(34,197,94,.26);display:flex;align-items:center;gap:4px;transition:background .2s}
-.bapp:hover{background:rgba(34,197,94,.22)}
-.bapp svg{width:10px;height:10px}
-.brej{padding:6px 9px;border-radius:8px;font-size:.7rem;font-weight:700;border:none;cursor:pointer;font-family:'DM Sans',sans-serif;background:rgba(239,68,68,.09);color:#f87171;border:1px solid rgba(239,68,68,.2);display:flex;align-items:center;gap:4px;transition:background .2s}
-.brej:hover{background:rgba(239,68,68,.18)}
-.brej svg{width:10px;height:10px}
+.sb-logo-img {
+  width: 36px; height: 36px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--s2);
+  cursor: pointer;
+  transition: box-shadow .2s;
+}
+.sb-logo-img:hover { box-shadow: 0 0 0 2px var(--ac); }
+.sb-logo-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.sb-logo-text .brand {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 900;
+  font-size: 1rem;
+  color: var(--tx);
+}
+.sb-logo-text .brand span { color: var(--ac); }
+.sb-logo-text .tag {
+  font-size: .58rem;
+  color: var(--mu);
+  text-transform: uppercase;
+  letter-spacing: .1em;
+  margin-top: 1px;
+}
 
-/* APPROVED */
-.apr-list{display:flex;flex-direction:column;gap:7px;max-height:340px;overflow-y:auto}
-.apr-list::-webkit-scrollbar{width:3px}
-.apr-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-.apr-item{display:flex;align-items:center;gap:9px;padding:9px 13px;background:var(--surface2);border-radius:10px}
-.chk{width:18px;height:18px;border-radius:50%;background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.24);display:flex;align-items:center;justify-content:center;flex-shrink:0}
-.chk svg{width:9px;height:9px;color:#4ade80}
-.apr-em{flex:1;font-size:.79rem;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.apr-badge{font-size:.6rem;padding:2px 7px;border-radius:999px;font-weight:700;flex-shrink:0}
-.apr-badge.manual{background:rgba(34,197,94,.1);border:1px solid rgba(34,197,94,.2);color:#4ade80}
-.apr-badge.izipay{background:rgba(227,6,19,.1);border:1px solid rgba(227,6,19,.2);color:#f87171}
-.apr-badge.yape{background:rgba(124,92,252,.1);border:1px solid rgba(124,92,252,.2);color:#a78bfa}
-.apr-badge.plin{background:rgba(0,188,212,.1);border:1px solid rgba(0,188,212,.2);color:#22d3ee}
-.apr-badge.paypal{background:rgba(0,156,222,.1);border:1px solid rgba(0,156,222,.2);color:#60a5fa}
-.apr-dt{font-size:.65rem;color:var(--muted);flex-shrink:0}
-.brev{padding:4px 10px;border-radius:7px;background:transparent;border:1px solid var(--border2);color:var(--muted);font-size:.63rem;cursor:pointer;transition:border-color .2s,color .2s}
-.brev:hover{border-color:var(--red);color:var(--red)}
+/* user chip */
+.sb-user {
+  margin: 12px 12px 0;
+  padding: 11px 13px;
+  background: var(--s2);
+  border: 1px solid var(--b2);
+  border-radius: 12px;
+  display: none;
+}
+.sb-user.show { display: block; }
+.sb-user .lbl { font-size: .58rem; color: var(--mu); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 3px; }
+.sb-user .email { font-size: .8rem; font-weight: 600; color: var(--tx); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sb-user .badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  margin-top: 5px; padding: 2px 8px;
+  background: rgba(34,197,94,.09); border: 1px solid rgba(34,197,94,.2);
+  border-radius: 999px; font-size: .58rem; font-weight: 700; color: #4ade80;
+}
+.sb-user .badge::before {
+  content: ''; width: 5px; height: 5px; border-radius: 50%;
+  background: #4ade80; animation: blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-/* AFFILIATES */
-.aff-item{display:flex;align-items:center;justify-content:space-between;padding:9px 13px;background:var(--surface2);border-radius:10px;margin-bottom:7px}
-.aff-code{font-family:'Montserrat',sans-serif;font-weight:700;font-size:.84rem;color:var(--accent2)}
-.aff-uses{font-size:.68rem;color:var(--muted)}
-.btn-add-aff{width:100%;padding:9px;background:rgba(124,92,252,.08);border:1px dashed rgba(124,92,252,.28);color:var(--accent2);border-radius:9px;font-size:.76rem;font-weight:600;cursor:pointer;transition:background .2s;font-family:'DM Sans',sans-serif;margin-top:3px;display:flex;align-items:center;justify-content:center;gap:5px}
-.btn-add-aff:hover{background:rgba(124,92,252,.16)}
+/* action buttons */
+.sb-actions { padding: 12px 12px 4px; display: flex; flex-direction: column; gap: 7px; }
+.btn-buy {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 11px 14px; border-radius: 12px;
+  background: var(--ac); color: #000;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .8rem;
+  letter-spacing: .04em; border: none; cursor: pointer;
+  transition: opacity .2s, transform .15s;
+  box-shadow: 0 4px 20px rgba(200,255,87,.2);
+}
+.btn-buy:hover { opacity: .85; transform: translateY(-1px); }
+.btn-buy svg { width: 14px; height: 14px; }
+.btn-access {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px 14px; border-radius: 12px;
+  background: transparent; color: var(--mu);
+  font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: .8rem;
+  border: 1px solid var(--b2); cursor: pointer;
+  transition: border-color .2s, color .2s;
+}
+.btn-access:hover { border-color: rgba(200,255,87,.3); color: var(--ac); }
+.btn-access svg { width: 13px; height: 13px; }
+.btn-logout {
+  display: none; align-items: center; justify-content: center; gap: 6px;
+  width: 100%; padding: 9px; border-radius: 10px;
+  background: transparent; border: 1px solid var(--b2); color: var(--mu);
+  font-size: .75rem; font-weight: 600; cursor: pointer;
+  font-family: 'DM Sans', sans-serif; transition: border-color .2s, color .2s;
+}
+.btn-logout.show { display: flex; }
+.btn-logout:hover { border-color: var(--re); color: var(--re); }
+.btn-logout svg { width: 13px; height: 13px; }
 
-/* LOG */
-.log-list{display:flex;flex-direction:column;gap:5px;max-height:200px;overflow-y:auto}
-.log-list::-webkit-scrollbar{width:3px}
-.log-list::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
-.log-item{display:flex;align-items:center;gap:8px;padding:7px 12px;background:var(--surface2);border-radius:9px;font-size:.74rem}
-.ld{width:6px;height:6px;border-radius:50%;flex-shrink:0}
-.ld.lg{background:var(--green)}.ld.lr{background:var(--red)}.ld.ly{background:var(--yellow)}
-.lt{flex:1;color:var(--text)}.ltime{font-size:.63rem;color:var(--muted);flex-shrink:0}
+.sb-divider { height: 1px; background: var(--b1); margin: 8px 12px; }
 
-/* CONFIG */
-.cfg-row{display:flex;gap:9px;align-items:flex-end;margin-bottom:10px}
-.cfg-row .finput{margin-bottom:0;flex:1}
-.btn-save{padding:10px 16px;background:var(--accent);color:#000;font-family:'Montserrat',sans-serif;font-weight:800;font-size:.8rem;border:none;border-radius:10px;cursor:pointer;transition:opacity .2s;white-space:nowrap;display:flex;align-items:center;gap:5px}
-.btn-save:hover{opacity:.86}
-.btn-save svg{width:12px;height:12px}
+/* nav */
+.sb-section { padding: 14px 12px 4px; }
+.sb-section-label {
+  font-size: .58rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--mu); padding: 0 7px; margin-bottom: 6px;
+}
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 9px 10px; border-radius: 10px;
+  cursor: pointer; font-size: .85rem; color: var(--mu);
+  transition: background .2s, color .2s; user-select: none;
+}
+.nav-item:hover { background: rgba(255,255,255,.04); color: var(--tx); }
+.nav-item.active { background: rgba(200,255,87,.08); color: var(--ac); }
+.nav-item svg { width: 16px; height: 16px; flex-shrink: 0; opacity: .5; }
+.nav-item.active svg { opacity: 1; }
 
-/* EMPTY */
-.empty-st{text-align:center;padding:24px;color:var(--muted);font-size:.77rem}
-.empty-st svg{width:24px;height:24px;opacity:.26;margin-bottom:7px;display:block;margin:0 auto 7px}
+.sb-footer { margin-top: auto; padding: 13px; border-top: 1px solid var(--b1); }
+.sb-footer p { font-size: .58rem; color: var(--mu); text-align: center; margin-top: 8px; }
 
-/* TOAST */
-.toast{position:fixed;bottom:22px;right:22px;z-index:9999;padding:11px 17px;border-radius:12px;font-size:.8rem;font-weight:600;transform:translateY(16px);opacity:0;transition:all .3s;pointer-events:none;display:flex;align-items:center;gap:7px}
-.toast.ok-t{background:rgba(34,197,94,.13);border:1px solid rgba(34,197,94,.26);color:#4ade80}
-.toast.err-t{background:rgba(239,68,68,.13);border:1px solid rgba(239,68,68,.26);color:#f87171}
-.toast.show{transform:translateY(0);opacity:1}
-.toast svg{width:14px;height:14px;flex-shrink:0}
+/* ─── MAIN ─── */
+.main {
+  margin-left: var(--sw);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+}
+.topbar {
+  padding: 28px 44px 0;
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 12px;
+}
+.topbar h1 {
+  font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 2rem;
+  letter-spacing: -.03em; line-height: 1.1;
+}
+.topbar h1 em { font-style: normal; color: var(--ac); }
+.topbar p { margin-top: 7px; font-size: .86rem; color: var(--mu); max-width: 400px; line-height: 1.5; }
+.live-pill {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 5px 13px; background: rgba(124,92,252,.1); border: 1px solid rgba(124,92,252,.25);
+  border-radius: 999px; font-size: .68rem; font-weight: 600; color: #b09cff;
+  text-transform: uppercase; letter-spacing: .04em; white-space: nowrap; flex-shrink: 0;
+}
+.live-pill::before {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: #7c5cfc; animation: pulse 2s infinite;
+}
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(.8)} }
 
-@media(max-width:700px){
-  .stats-row{grid-template-columns:1fr 1fr}
-  .main-grid{grid-template-columns:1fr}
-  .card.full{grid-column:1}
-  .body{padding:14px}
-  .mub-grid{grid-template-columns:1fr 1fr}
-  .qb-row{flex-direction:column}
-  .qb-inp,.btn-qa{width:100%;justify-content:center}
+.content { padding: 28px 44px 56px; flex: 1; }
+
+/* panels */
+.panel { display: none; animation: fadeUp .3s ease both; }
+.panel.active { display: block; }
+@keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+.section-title {
+  font-family: 'Montserrat', sans-serif; font-size: .7rem; font-weight: 700;
+  color: var(--mu); letter-spacing: .1em; text-transform: uppercase;
+  margin-bottom: 18px; display: flex; align-items: center; gap: 9px;
+}
+.section-title::after { content: ''; flex: 1; height: 1px; background: var(--b1); }
+
+/* ─── VIDEO GRID ─── */
+.video-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 18px; }
+.video-card {
+  background: var(--s2); border: 1px solid var(--b1);
+  border-radius: 18px; overflow: hidden; position: relative;
+  transition: transform .25s, border-color .25s, box-shadow .25s;
+}
+.video-card.unlocked { cursor: pointer; }
+.video-card.unlocked:hover {
+  transform: translateY(-4px);
+  border-color: rgba(200,255,87,.22);
+  box-shadow: 0 14px 42px rgba(0,0,0,.4), 0 0 0 1px rgba(200,255,87,.1);
+}
+.video-card.locked { cursor: default; }
+
+.thumb {
+  width: 100%; aspect-ratio: 16/9;
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
+}
+.thumb-1 { background: linear-gradient(135deg,#12122a,#0d1a3a,#0a2855); }
+.thumb-1::before { content:''; position:absolute;inset:0; background: radial-gradient(circle at 28% 36%,rgba(124,92,252,.35) 0%,transparent 55%), radial-gradient(circle at 76% 72%,rgba(200,255,87,.12) 0%,transparent 45%); }
+.thumb-2 { background: linear-gradient(135deg,#0a1520,#122030,#1a2d45); }
+.thumb-2::before { content:''; position:absolute;inset:0; background: radial-gradient(circle at 64% 28%,rgba(200,255,87,.18) 0%,transparent 55%), radial-gradient(circle at 14% 68%,rgba(124,92,252,.22) 0%,transparent 45%); }
+.thumb-3 { background: linear-gradient(135deg,#160825,#251244,#301860); }
+.thumb-3::before { content:''; position:absolute;inset:0; background: radial-gradient(circle at 50% 45%,rgba(200,255,87,.16) 0%,transparent 55%); }
+.thumb-4 { background: linear-gradient(135deg,#080e20,#0b1835,#0f2248); }
+.thumb-4::before { content:''; position:absolute;inset:0; background: radial-gradient(circle at 38% 58%,rgba(124,92,252,.18) 0%,transparent 50%); }
+
+.play-btn {
+  width: 50px; height: 50px; border-radius: 50%;
+  background: rgba(255,255,255,.08); backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.18);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; z-index: 1;
+  transition: transform .2s, background .2s;
+}
+.video-card.unlocked:hover .play-btn { background: var(--ac); transform: scale(1.1); }
+.play-btn svg { fill: white; width: 15px; height: 15px; margin-left: 3px; }
+.video-card.unlocked:hover .play-btn svg { fill: #000; }
+
+.vnum {
+  position: absolute; top: 10px; left: 10px; z-index: 1;
+  font-family: 'Montserrat', sans-serif; font-size: .6rem; font-weight: 700;
+  color: rgba(255,255,255,.35); letter-spacing: .1em;
+}
+.coming-badge {
+  position: absolute; top: 10px; right: 10px;
+  padding: 3px 9px; background: rgba(255,200,0,.13); border: 1px solid rgba(255,200,0,.28);
+  border-radius: 999px; font-size: .57rem; font-weight: 700; color: #ffd60a;
+  text-transform: uppercase; letter-spacing: .06em;
+}
+.vinfo { padding: 14px 16px 16px; }
+.vtag { font-size: .6rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; color: var(--ac); margin-bottom: 5px; }
+.vinfo h3 { font-family: 'Montserrat', sans-serif; font-size: .88rem; font-weight: 700; line-height: 1.35; }
+.vmeta { margin-top: 8px; display: flex; align-items: center; gap: 7px; font-size: .69rem; color: var(--mu); }
+.vmeta-dot { width: 3px; height: 3px; border-radius: 50%; background: var(--mu); }
+
+/* lock overlay */
+.lock-overlay {
+  position: absolute; inset: 0; border-radius: 18px;
+  background: rgba(8,8,15,.76); backdrop-filter: blur(4px);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 8px; z-index: 3;
+}
+.lock-overlay svg { width: 20px; height: 20px; color: var(--mu); opacity: .6; }
+.lock-overlay span { font-size: .68rem; color: var(--mu); }
+.lock-overlay .lo-btn {
+  margin-top: 4px; padding: 7px 16px; border-radius: 9px;
+  background: var(--ac); color: #000;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .67rem;
+  letter-spacing: .04em; border: none; cursor: pointer;
+  transition: opacity .2s; display: flex; align-items: center; gap: 5px;
+}
+.lock-overlay .lo-btn:hover { opacity: .85; }
+
+/* ─── REDES ─── */
+.redes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 18px; }
+.red-card {
+  border-radius: 18px; padding: 26px 22px;
+  display: flex; flex-direction: column; gap: 13px;
+  border: 1px solid var(--b1); text-decoration: none;
+  transition: transform .25s, box-shadow .25s; position: relative; overflow: hidden;
+}
+.red-card:hover { transform: translateY(-4px); }
+.red-card::before { content: ''; position: absolute; inset: 0; opacity: .07; transition: opacity .3s; }
+.red-card:hover::before { opacity: .13; }
+.red-tiktok { background: linear-gradient(145deg,#0d0d16,#14141f); }
+.red-tiktok::before { background: linear-gradient(135deg,#69C9D0,#EE1D52 50%,#010101); }
+.red-tiktok:hover { box-shadow: 0 16px 48px rgba(238,29,82,.18), 0 0 0 1px rgba(238,29,82,.15); }
+.red-wa { background: linear-gradient(145deg,#0c130c,#121c12); }
+.red-wa::before { background: linear-gradient(135deg,#25D366,#128C7E); }
+.red-wa:hover { box-shadow: 0 16px 48px rgba(37,211,102,.18), 0 0 0 1px rgba(37,211,102,.15); }
+.red-icon {
+  width: 46px; height: 46px; border-radius: 12px;
+  display: flex; align-items: center; justify-content: center; z-index: 1; position: relative;
+}
+.red-tiktok .red-icon { background: linear-gradient(135deg,rgba(105,201,208,.16),rgba(238,29,82,.16)); border: 1px solid rgba(238,29,82,.25); }
+.red-wa .red-icon { background: rgba(37,211,102,.12); border: 1px solid rgba(37,211,102,.25); }
+.red-icon svg { width: 22px; height: 22px; }
+.red-info { position: relative; z-index: 1; }
+.red-platform { font-size: .6rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; margin-bottom: 4px; }
+.red-tiktok .red-platform { color: #EE1D52; }
+.red-wa .red-platform { color: #25D366; }
+.red-handle { font-family: 'Montserrat', sans-serif; font-size: 1.1rem; font-weight: 800; color: var(--tx); }
+.red-sub { font-size: .71rem; color: var(--mu); margin-top: 3px; }
+.red-cta {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-size: .73rem; font-weight: 600; padding: 7px 13px; border-radius: 8px;
+  align-self: flex-start; z-index: 1; position: relative; text-decoration: none;
+  transition: gap .2s;
+}
+.red-card:hover .red-cta { gap: 9px; }
+.red-tiktok .red-cta { background: rgba(238,29,82,.1); color: #ff6b8a; border: 1px solid rgba(238,29,82,.18); }
+.red-wa .red-cta { background: rgba(37,211,102,.08); color: #4ddb88; border: 1px solid rgba(37,211,102,.18); }
+.rring { position: absolute; right: -26px; bottom: -26px; width: 120px; height: 120px; border-radius: 50%; border: 1px solid; opacity: .07; }
+.rring2 { position: absolute; right: -46px; bottom: -46px; width: 185px; height: 185px; border-radius: 50%; border: 1px solid; opacity: .04; }
+.red-tiktok .rring, .red-tiktok .rring2 { border-color: #EE1D52; }
+.red-wa .rring, .red-wa .rring2 { border-color: #25D366; }
+
+/* ─── PLACEHOLDER ─── */
+.placeholder {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-height: 290px; text-align: center; gap: 13px;
+}
+.ph-icon {
+  width: 64px; height: 64px; border-radius: 18px;
+  background: var(--s2); border: 1px solid var(--b1);
+  display: flex; align-items: center; justify-content: center;
+}
+.ph-icon svg { width: 26px; height: 26px; color: var(--mu); }
+.placeholder h2 { font-family: 'Montserrat', sans-serif; font-size: 1.2rem; font-weight: 800; }
+.placeholder p { color: var(--mu); font-size: .83rem; max-width: 260px; line-height: 1.6; }
+.coming-pill {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 5px 13px; background: rgba(255,255,255,.03); border: 1px solid var(--b1);
+  border-radius: 999px; font-size: .68rem; color: var(--mu);
+}
+
+/* ═══════════════════════════════
+   MOBILE HEADER
+═══════════════════════════════ */
+.mob-header {
+  display: none;
+  position: fixed; top: 0; left: 0; right: 0; z-index: 150;
+  height: 56px; background: var(--s1); border-bottom: 1px solid var(--b1);
+  padding: 0 16px; align-items: center; justify-content: space-between;
+}
+.mob-logo {
+  display: flex; align-items: center; gap: 8px;
+  font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: .95rem; color: var(--tx);
+}
+.mob-logo img { width: 26px; height: 26px; border-radius: 7px; cursor: pointer; }
+.mob-logo span { color: var(--ac); }
+.mob-right { display: flex; align-items: center; gap: 9px; }
+.mob-buy-btn {
+  display: flex; align-items: center; gap: 5px;
+  padding: 7px 13px; background: var(--ac); color: #000;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .72rem;
+  border-radius: 9px; border: none; cursor: pointer;
+}
+.hamburger {
+  width: 36px; height: 36px; border-radius: 9px;
+  background: var(--s2); border: 1px solid var(--b2);
+  display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 4px;
+  cursor: pointer; padding: 10px;
+}
+.hamburger span {
+  display: block; width: 16px; height: 1.5px;
+  background: var(--tx); border-radius: 2px; transition: transform .3s, opacity .3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(5.5px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-5.5px) rotate(-45deg); }
+.sb-backdrop {
+  display: none; position: fixed; inset: 0; z-index: 99;
+  background: rgba(0,0,0,.65); backdrop-filter: blur(5px);
+}
+.sb-backdrop.show { display: block; }
+
+/* ═══════════════════════════════
+   CHECKOUT MODAL
+═══════════════════════════════ */
+.modal-bg {
+  display: none; position: fixed; inset: 0; z-index: 500;
+  background: rgba(4,4,10,.92); backdrop-filter: blur(12px);
+  align-items: center; justify-content: center; padding: 16px;
+}
+.modal-bg.show { display: flex; }
+.modal {
+  width: 100%; max-width: 500px; background: var(--s1);
+  border: 1px solid var(--b2); border-radius: 22px;
+  overflow: hidden; max-height: 92vh; display: flex; flex-direction: column;
+  box-shadow: 0 40px 120px rgba(0,0,0,.8);
+  animation: fadeUp .3s ease both;
+}
+/* modal header */
+.modal-head {
+  background: linear-gradient(135deg,#0b0b1c,#10102a 50%,#160d38);
+  padding: 20px 24px 16px; position: relative; overflow: hidden; flex-shrink: 0;
+}
+.modal-head::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 50% -20%, rgba(124,92,252,.5) 0%, transparent 65%);
+}
+.modal-close {
+  position: absolute; top: 13px; right: 13px; z-index: 2;
+  width: 28px; height: 28px; border-radius: 50%;
+  border: 1px solid var(--b2); background: rgba(255,255,255,.04);
+  display: flex; align-items: center; justify-content: center;
+  cursor: pointer; color: var(--mu); transition: background .2s;
+}
+.modal-close:hover { background: rgba(255,255,255,.1); color: var(--tx); }
+.modal-head-row {
+  display: flex; align-items: center; gap: 10px; position: relative; z-index: 1;
+}
+.modal-logo { width: 32px; height: 32px; border-radius: 8px; overflow: hidden; flex-shrink: 0; }
+.modal-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.modal-brand { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: .95rem; color: var(--tx); }
+.modal-brand span { color: var(--ac); }
+.modal-sub { font-size: .62rem; color: var(--mu); text-transform: uppercase; letter-spacing: .09em; margin-top: 1px; }
+.ssl-badge {
+  margin-left: auto; display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; background: rgba(34,197,94,.08); border: 1px solid rgba(34,197,94,.18);
+  border-radius: 999px; font-size: .58rem; font-weight: 700; color: #4ade80; white-space: nowrap;
+}
+/* modal tabs */
+.modal-tabs { display: flex; border-bottom: 1px solid var(--b1); flex-shrink: 0; }
+.modal-tab {
+  flex: 1; padding: 11px 8px; text-align: center;
+  font-size: .71rem; font-weight: 700; color: var(--mu); cursor: pointer;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  text-transform: uppercase; letter-spacing: .05em;
+  display: flex; align-items: center; justify-content: center; gap: 5px;
+  transition: color .2s, border-color .2s;
+}
+.modal-tab.active { color: var(--ac); border-color: var(--ac); }
+.modal-tab svg { width: 13px; height: 13px; }
+/* modal body */
+.modal-body { padding: 20px 22px 22px; overflow-y: auto; flex: 1; }
+.modal-body::-webkit-scrollbar { width: 3px; }
+.modal-body::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 3px; }
+.modal-step { display: none; }
+.modal-step.active { display: block; }
+
+/* form elements */
+.flabel {
+  display: block; font-size: .63rem; font-weight: 700;
+  color: var(--mu); letter-spacing: .09em; text-transform: uppercase; margin-bottom: 5px;
+}
+.finput {
+  width: 100%; padding: 10px 13px;
+  background: var(--s2); border: 1px solid var(--b2); border-radius: 10px;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .87rem;
+  outline: none; transition: border-color .2s, box-shadow .2s; margin-bottom: 12px;
+}
+.finput:focus { border-color: rgba(200,255,87,.4); box-shadow: 0 0 0 3px rgba(200,255,87,.07); }
+.finput::placeholder { color: var(--mu); }
+select.finput {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23606078' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center; padding-right: 34px;
+}
+select.finput option { background: #141421; }
+.frow { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.fmsg {
+  margin-top: 9px; padding: 9px 12px; border-radius: 9px;
+  font-size: .79rem; display: none; line-height: 1.5;
+}
+.fmsg.ok  { background: rgba(34,197,94,.09);  border: 1px solid rgba(34,197,94,.22);  color: #4ade80; display: block; }
+.fmsg.err { background: rgba(239,68,68,.09);  border: 1px solid rgba(239,68,68,.22);  color: #f87171; display: block; }
+.fmsg.inf { background: rgba(124,92,252,.09); border: 1px solid rgba(124,92,252,.25); color: #a78bfa; display: block; }
+.fmsg.warn{ background: rgba(251,191,36,.09); border: 1px solid rgba(251,191,36,.22); color: #fbbf24; display: block; }
+
+.btn-main {
+  width: 100%; padding: 12px; background: var(--ac); color: #000;
+  font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .88rem;
+  letter-spacing: .04em; border: none; border-radius: 11px; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  transition: opacity .2s, transform .15s;
+  box-shadow: 0 4px 18px rgba(200,255,87,.18);
+}
+.btn-main:hover { opacity: .87; transform: translateY(-1px); }
+.btn-main:disabled { opacity: .3; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-back {
+  font-size: .71rem; color: var(--mu); cursor: pointer;
+  display: inline-flex; align-items: center; gap: 4px; margin-top: 10px;
+}
+.btn-back:hover { color: var(--ac); }
+.sec-note {
+  display: flex; align-items: center; gap: 7px;
+  padding: 9px 12px; background: rgba(34,197,94,.05); border: 1px solid rgba(34,197,94,.12);
+  border-radius: 9px; font-size: .71rem; color: var(--mu); margin-top: 10px;
+}
+.sec-note svg { width: 12px; height: 12px; color: var(--gr); flex-shrink: 0; }
+
+/* order summary */
+.order-sum {
+  background: var(--s2); border: 1px solid var(--b2); border-radius: 13px;
+  padding: 14px 15px; margin-bottom: 17px;
+}
+.order-sum .title { font-size: .63rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--mu); margin-bottom: 11px; }
+.sum-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; border-bottom: 1px solid var(--b1); }
+.sum-row:last-child { border: none; padding-top: 9px; margin-top: 2px; }
+.sum-label { font-size: .79rem; color: var(--mu); }
+.sum-val { font-size: .79rem; font-weight: 600; color: var(--tx); }
+.sum-total-label { font-family: 'Montserrat', sans-serif; font-size: .84rem; font-weight: 800; }
+.sum-total-val { font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 900; color: var(--ac); }
+
+/* payment method grid */
+.pm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 16px; }
+.pm-opt {
+  display: flex; align-items: center; justify-content: center; gap: 7px;
+  padding: 10px; border-radius: 11px; background: var(--s2);
+  border: 1.5px solid var(--b1); cursor: pointer;
+  font-size: .76rem; font-weight: 600; color: var(--mu);
+  transition: border-color .2s, background .2s;
+}
+.pm-opt:hover { border-color: rgba(200,255,87,.2); color: var(--tx); }
+.pm-opt.sel { border-color: var(--ac); background: rgba(200,255,87,.06); color: var(--tx); }
+.pm-opt svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+/* Izipay box */
+.izipay-bar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 10px 13px; background: rgba(227,6,19,.07); border: 1px solid rgba(227,6,19,.18);
+  border-radius: 10px; margin-bottom: 13px;
+}
+.izipay-bar svg { width: 24px; height: 24px; flex-shrink: 0; }
+.izipay-bar strong { font-size: .8rem; color: var(--tx); display: block; }
+.izipay-bar span { font-size: .67rem; color: var(--mu); }
+.izipay-loading { display: flex; flex-direction: column; align-items: center; gap: 11px; padding: 28px; }
+.spinner { width: 30px; height: 30px; border: 2.5px solid var(--b2); border-top-color: var(--ac); border-radius: 50%; animation: spin .75s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.izipay-loading p { font-size: .78rem; color: var(--mu); }
+.izipay-err-box { padding: 12px; background: rgba(239,68,68,.08); border: 1px solid rgba(239,68,68,.2); border-radius: 10px; font-size: .79rem; color: #f87171; margin-bottom: 12px; display: none; }
+.izipay-err-box.show { display: block; }
+
+/* manual payment */
+.manual-card {
+  background: var(--s2); border: 1px solid var(--b2);
+  border-radius: 13px; padding: 15px; margin-bottom: 13px; text-align: center;
+}
+.manual-name { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 1.35rem; margin-bottom: 4px; }
+.yape-grad  { background: linear-gradient(135deg,#7b2ff7,#a855f7); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.plin-grad  { background: linear-gradient(135deg,#00bcd4,#00838f);  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.pp-grad    { background: linear-gradient(135deg,#003087,#009cde);   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+.manual-num { font-family: 'Montserrat', sans-serif; font-size: 1.25rem; font-weight: 800; color: var(--tx); letter-spacing: .04em; margin: 5px 0 3px; }
+.manual-sub { font-size: .73rem; color: var(--mu); }
+.price-tag {
+  display: inline-flex; align-items: center; gap: 5px;
+  padding: 4px 12px; background: rgba(200,255,87,.07); border: 1px solid rgba(200,255,87,.17);
+  border-radius: 999px; font-size: .77rem; font-weight: 700; color: var(--ac);
+  font-family: 'Montserrat', sans-serif; margin-top: 7px;
+}
+.pay-steps { list-style: none; margin-top: 10px; }
+.pay-steps li { display: flex; gap: 8px; font-size: .77rem; color: var(--mu); padding: 5px 0; border-bottom: 1px solid var(--b1); line-height: 1.45; }
+.pay-steps li:last-child { border: none; }
+.sn {
+  width: 18px; height: 18px; flex-shrink: 0; border-radius: 50%;
+  background: rgba(200,255,87,.09); border: 1px solid rgba(200,255,87,.18);
+  display: flex; align-items: center; justify-content: center;
+  font-size: .56rem; font-weight: 800; color: var(--ac); margin-top: 1px;
+}
+
+/* order box */
+.order-box {
+  background: linear-gradient(135deg,rgba(124,92,252,.09),rgba(200,255,87,.05));
+  border: 1px solid rgba(124,92,252,.22); border-radius: 11px;
+  padding: 12px 14px; margin-bottom: 13px;
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+}
+.order-box .ob-label { font-size: .61rem; font-weight: 700; color: var(--mu); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+.order-box .ob-num { font-family: 'Montserrat', sans-serif; font-size: .93rem; font-weight: 800; color: var(--tx); letter-spacing: .04em; }
+.copy-btn {
+  padding: 4px 10px; border-radius: 7px;
+  background: rgba(200,255,87,.08); border: 1px solid rgba(200,255,87,.17);
+  color: var(--ac); font-size: .61rem; font-weight: 700; cursor: pointer;
+  display: inline-flex; align-items: center; gap: 3px; transition: background .2s;
+  font-family: 'DM Sans', sans-serif; white-space: nowrap;
+}
+.copy-btn:hover { background: rgba(200,255,87,.16); }
+.copy-btn.copied { background: rgba(34,197,94,.12); border-color: rgba(34,197,94,.25); color: #4ade80; }
+
+/* WA button */
+.btn-wa {
+  width: 100%; padding: 11px; margin-top: 8px;
+  background: rgba(37,211,102,.1); border: 1px solid rgba(37,211,102,.24); color: #4ddb88;
+  border-radius: 11px; font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .83rem;
+  cursor: pointer; text-decoration: none;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+  transition: background .2s, transform .15s;
+}
+.btn-wa:hover { background: rgba(37,211,102,.18); transform: translateY(-1px); }
+.btn-wa svg { width: 17px; height: 17px; flex-shrink: 0; }
+
+/* divider */
+.div-or { display: flex; align-items: center; gap: 10px; margin: 10px 0; font-size: .67rem; color: var(--mu); }
+.div-or::before, .div-or::after { content: ''; flex: 1; height: 1px; background: var(--b1); }
+
+/* status tracker */
+.status-box { background: var(--s2); border: 1px solid var(--b2); border-radius: 13px; padding: 14px 15px; margin-top: 14px; }
+.status-box .title { font-size: .62rem; font-weight: 700; text-transform: uppercase; letter-spacing: .09em; color: var(--mu); margin-bottom: 12px; }
+.st-step { display: flex; align-items: flex-start; gap: 10px; position: relative; padding-bottom: 12px; }
+.st-step:last-child { padding-bottom: 0; }
+.st-step::before { content: ''; position: absolute; left: 12px; top: 26px; bottom: 0; width: 1px; background: var(--b1); }
+.st-step:last-child::before { display: none; }
+.st-ic { width: 26px; height: 26px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; position: relative; z-index: 1; }
+.st-ic.done { background: rgba(200,255,87,.13); border: 1.5px solid rgba(200,255,87,.35); }
+.st-ic.done svg { color: var(--ac); width: 11px; height: 11px; }
+.st-ic.spin { background: rgba(124,92,252,.13); border: 1.5px solid rgba(124,92,252,.35); animation: pr 1.8s infinite; }
+.st-ic.spin svg { color: #a78bfa; width: 11px; height: 11px; }
+.st-ic.wait { background: var(--s2); border: 1.5px solid var(--b2); }
+.st-ic.wait svg { color: var(--mu); width: 11px; height: 11px; }
+@keyframes pr { 0%,100%{box-shadow:0 0 0 0 rgba(124,92,252,.4)} 50%{box-shadow:0 0 0 6px rgba(124,92,252,0)} }
+.st-label { font-size: .79rem; font-weight: 600; color: var(--tx); padding-top: 2px; }
+.st-label.dim { color: var(--mu); }
+.st-desc { font-size: .7rem; color: var(--mu); margin-top: 2px; line-height: 1.4; }
+
+/* success / pending screens */
+.center-screen { text-align: center; padding: 10px 0; }
+.big-icon {
+  width: 68px; height: 68px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 15px; animation: pop .4s cubic-bezier(.34,1.56,.64,1) both;
+}
+@keyframes pop { from{transform:scale(0)} to{transform:scale(1)} }
+.big-icon.green { background: rgba(200,255,87,.11); border: 2px solid rgba(200,255,87,.3); }
+.big-icon.green svg { color: var(--ac); width: 30px; height: 30px; }
+.big-icon.yellow { background: rgba(251,191,36,.1); border: 2px solid rgba(251,191,36,.28); }
+.big-icon.yellow svg { color: var(--ye); width: 28px; height: 28px; }
+.screen-title { font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 900; margin-bottom: 7px; }
+.screen-sub { font-size: .8rem; color: var(--mu); line-height: 1.6; max-width: 310px; margin: 0 auto 14px; }
+.pending-order-badge {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 14px; background: rgba(251,191,36,.08); border: 1px solid rgba(251,191,36,.2);
+  border-radius: 999px; font-family: 'Montserrat', sans-serif; font-size: .79rem; font-weight: 700;
+  color: var(--ye); margin-bottom: 16px;
+}
+.aff-toggle { display: flex; align-items: center; gap: 7px; font-size: .73rem; color: var(--mu); cursor: pointer; margin: 2px 0 10px; user-select: none; }
+.aff-toggle:hover { color: var(--tx); }
+#aff-field { display: none; }
+
+/* ═══════════════════════════════
+   ADMIN PASSWORD MODAL
+═══════════════════════════════ */
+.adm-pass-bg {
+  display: none; position: fixed; inset: 0; z-index: 600;
+  background: rgba(4,4,10,.94); backdrop-filter: blur(14px);
+  align-items: center; justify-content: center; padding: 20px;
+}
+.adm-pass-bg.show { display: flex; }
+.adm-pass-card {
+  width: 100%; max-width: 330px; background: var(--s1);
+  border: 1px solid var(--b2); border-radius: 20px; overflow: hidden;
+  box-shadow: 0 32px 80px rgba(0,0,0,.7); animation: fadeUp .3s ease both;
+}
+.adm-pass-head {
+  background: linear-gradient(135deg,#090918,#0f0f28 55%,#14083a);
+  padding: 24px 22px 18px; text-align: center; position: relative; overflow: hidden;
+}
+.adm-pass-head::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 50% -30%,rgba(124,92,252,.55) 0%,transparent 65%); }
+.adm-pass-icon {
+  width: 48px; height: 48px; border-radius: 13px;
+  background: rgba(200,255,87,.1); border: 1px solid rgba(200,255,87,.22);
+  display: flex; align-items: center; justify-content: center;
+  margin: 0 auto 10px; position: relative; z-index: 1;
+}
+.adm-pass-icon svg { width: 20px; height: 20px; color: var(--ac); }
+.adm-pass-title { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: .95rem; position: relative; z-index: 1; }
+.adm-pass-sub { font-size: .65rem; color: var(--mu); text-transform: uppercase; letter-spacing: .09em; margin-top: 2px; position: relative; z-index: 1; }
+.adm-pass-body { padding: 20px 22px 22px; }
+.adm-pass-input {
+  width: 100%; padding: 12px; background: var(--s2); border: 1px solid var(--b2); border-radius: 11px;
+  color: var(--tx); font-family: 'Montserrat', sans-serif; font-size: 1.4rem; font-weight: 800;
+  letter-spacing: .3em; text-align: center; outline: none; margin-bottom: 14px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.adm-pass-input:focus { border-color: rgba(200,255,87,.4); box-shadow: 0 0 0 3px rgba(200,255,87,.08); }
+.adm-pass-input::placeholder { font-size: .9rem; letter-spacing: .1em; font-weight: 400; }
+.adm-pass-err { padding: 8px 11px; background: rgba(239,68,68,.09); border: 1px solid rgba(239,68,68,.22); border-radius: 8px; font-size: .76rem; color: #f87171; display: none; margin-bottom: 10px; }
+.adm-pass-err.show { display: block; }
+.adm-pass-cancel { display: block; text-align: center; margin-top: 10px; font-size: .72rem; color: var(--mu); cursor: pointer; }
+.adm-pass-cancel:hover { color: var(--tx); }
+
+/* ═══════════════════════════════
+   ADMIN PANEL
+═══════════════════════════════ */
+#admin-panel { display: none; position: fixed; inset: 0; z-index: 400; background: var(--bg); flex-direction: column; animation: fadeUp .3s ease both; }
+#admin-panel.show { display: flex; }
+.adm-top { background: var(--s1); border-bottom: 1px solid var(--b1); padding: 0 28px; height: 58px; display: flex; align-items: center; justify-content: space-between; flex-shrink: 0; }
+.adm-top-left { display: flex; align-items: center; gap: 11px; }
+.adm-logo { width: 30px; height: 30px; border-radius: 8px; overflow: hidden; background: var(--s2); cursor: pointer; }
+.adm-logo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.adm-brand { font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: .95rem; }
+.adm-brand span { color: var(--ac); }
+.adm-badge-red { padding: 3px 10px; border-radius: 999px; background: rgba(239,68,68,.12); border: 1px solid rgba(239,68,68,.24); font-size: .6rem; font-weight: 700; color: #f87171; text-transform: uppercase; letter-spacing: .08em; }
+.adm-time { font-size: .7rem; color: var(--mu); }
+.btn-adm-exit { padding: 7px 14px; background: transparent; border: 1px solid var(--b2); color: var(--mu); border-radius: 9px; font-size: .74rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; gap: 5px; transition: border-color .2s, color .2s; }
+.btn-adm-exit:hover { border-color: var(--ac); color: var(--ac); }
+.adm-body { padding: 26px; flex: 1; overflow-y: auto; }
+.adm-inner { max-width: 1100px; margin: 0 auto; }
+
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 13px; margin-bottom: 26px; }
+.stat { background: var(--s1); border: 1px solid var(--b1); border-radius: 14px; padding: 17px 20px; position: relative; overflow: hidden; }
+.stat::before { content: ''; position: absolute; top: 0; left: 0; width: 3px; height: 100%; border-radius: 2px 0 0 2px; }
+.stat.s-ye::before { background: var(--ye); }
+.stat.s-gr::before { background: var(--gr); }
+.stat.s-pu::before { background: var(--ac2); }
+.stat.s-ac::before { background: var(--ac); }
+.stat-n { font-family: 'Montserrat', sans-serif; font-size: 2rem; font-weight: 900; }
+.stat-l { font-size: .65rem; color: var(--mu); margin-top: 3px; text-transform: uppercase; letter-spacing: .07em; }
+
+.adm-box { border-radius: 16px; padding: 18px 22px; margin-bottom: 22px; }
+.adm-box.purple { background: linear-gradient(135deg,rgba(124,92,252,.09),rgba(200,255,87,.05)); border: 1px solid rgba(124,92,252,.22); }
+.adm-box.green  { background: linear-gradient(135deg,rgba(34,197,94,.07),rgba(200,255,87,.04));   border: 1px solid rgba(34,197,94,.2); }
+.adm-box-title { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .88rem; margin-bottom: 3px; display: flex; align-items: center; gap: 7px; }
+.adm-box-title svg { width: 17px; height: 17px; }
+.purple .adm-box-title svg { color: var(--ac2); }
+.green  .adm-box-title svg { color: var(--gr); }
+.adm-box-sub { font-size: .75rem; color: var(--mu); margin-bottom: 13px; }
+.adm-row { display: flex; gap: 9px; align-items: flex-end; flex-wrap: wrap; }
+.adm-inp {
+  flex: 1; min-width: 160px; padding: 10px 13px; background: var(--s2);
+  border: 1px solid var(--b2); border-radius: 10px; color: var(--tx);
+  font-family: 'DM Sans', sans-serif; font-size: .86rem; outline: none;
+  transition: border-color .2s; width: 100%;
+}
+.adm-inp:focus { border-color: rgba(200,255,87,.38); }
+.adm-inp::placeholder { color: var(--mu); }
+.adm-inp.mono { font-family: 'Montserrat', sans-serif; font-size: .88rem; font-weight: 700; letter-spacing: .04em; }
+.adm-inp.mono::placeholder { font-weight: 400; font-family: 'DM Sans', sans-serif; }
+.btn-approve { padding: 10px 18px; background: var(--ac); color: #000; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .82rem; letter-spacing: .04em; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: opacity .2s; }
+.btn-approve:hover { opacity: .87; }
+.btn-approve svg { width: 14px; height: 14px; }
+.btn-add-user { padding: 10px 18px; background: var(--gr); color: #000; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .81rem; letter-spacing: .04em; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 6px; white-space: nowrap; transition: opacity .2s; }
+.btn-add-user:hover { opacity: .87; }
+.adm-msg { margin-top: 5px; padding: 8px 11px; border-radius: 8px; font-size: .76rem; display: none; }
+.adm-msg.ok  { background: rgba(34,197,94,.09);  border: 1px solid rgba(34,197,94,.22);  color: #4ade80; display: block; }
+.adm-msg.err { background: rgba(239,68,68,.09);  border: 1px solid rgba(239,68,68,.22);  color: #f87171; display: block; }
+.mb-grid { display: grid; grid-template-columns: 1fr 1fr 1fr auto; gap: 8px; align-items: flex-end; }
+.mb-field { display: flex; flex-direction: column; gap: 4px; }
+.mb-lbl { font-size: .62rem; font-weight: 700; color: var(--mu); text-transform: uppercase; letter-spacing: .08em; }
+
+.adm-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; }
+.adm-card { background: var(--s1); border: 1px solid var(--b1); border-radius: 16px; padding: 20px; }
+.adm-card.full { grid-column: 1/-1; }
+.adm-card-title { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .74rem; color: var(--mu); letter-spacing: .09em; text-transform: uppercase; margin-bottom: 13px; display: flex; align-items: center; gap: 7px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; }
+.d-ye{background:var(--ye)} .d-gr{background:var(--gr)} .d-pu{background:var(--ac2)} .d-ac{background:var(--ac)}
+
+.pi-list { display: flex; flex-direction: column; gap: 8px; }
+.pi-item { background: var(--s2); border: 1px solid var(--b1); border-radius: 11px; padding: 12px 13px; display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.pi-left { flex: 1; min-width: 0; }
+.pi-email { font-weight: 600; font-size: .83rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.pi-name  { font-size: .68rem; color: var(--mu); margin-top: 1px; }
+.pi-date  { font-size: .64rem; color: var(--mu); margin-top: 1px; }
+.pi-order { font-family: 'Montserrat', sans-serif; font-size: .7rem; font-weight: 700; color: var(--ac2); margin-top: 3px; }
+.pi-method{ font-size: .62rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; background: rgba(124,92,252,.1); border: 1px solid rgba(124,92,252,.2); color: #a78bfa; margin-top: 3px; display: inline-block; }
+.pi-acts { display: flex; gap: 5px; flex-shrink: 0; }
+.b-app { padding: 6px 11px; border-radius: 8px; font-size: .7rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; background: rgba(34,197,94,.12); color: #4ade80; border: 1px solid rgba(34,197,94,.26); display: flex; align-items: center; gap: 4px; transition: background .2s; }
+.b-app:hover { background: rgba(34,197,94,.22); }
+.b-rej { padding: 6px 9px; border-radius: 8px; font-size: .7rem; font-weight: 700; cursor: pointer; font-family: 'DM Sans', sans-serif; background: rgba(239,68,68,.09); color: #f87171; border: 1px solid rgba(239,68,68,.2); display: flex; align-items: center; gap: 4px; transition: background .2s; }
+.b-rej:hover { background: rgba(239,68,68,.18); }
+.b-app svg, .b-rej svg { width: 10px; height: 10px; }
+
+.apr-list { display: flex; flex-direction: column; gap: 7px; max-height: 340px; overflow-y: auto; }
+.apr-list::-webkit-scrollbar { width: 3px; }
+.apr-list::-webkit-scrollbar-thumb { background: var(--b2); border-radius: 3px; }
+.apr-item { display: flex; align-items: center; gap: 8px; padding: 9px 12px; background: var(--s2); border-radius: 10px; }
+.apr-check { width: 18px; height: 18px; border-radius: 50%; background: rgba(34,197,94,.1); border: 1px solid rgba(34,197,94,.24); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.apr-check svg { width: 9px; height: 9px; color: #4ade80; }
+.apr-email { flex: 1; font-size: .79rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.apr-badge { font-size: .6rem; padding: 2px 7px; border-radius: 999px; font-weight: 700; flex-shrink: 0; }
+.apr-badge.manual { background: rgba(34,197,94,.1);  border: 1px solid rgba(34,197,94,.2);  color: #4ade80; }
+.apr-badge.izipay  { background: rgba(227,6,19,.1);   border: 1px solid rgba(227,6,19,.2);   color: #f87171; }
+.apr-badge.yape    { background: rgba(124,92,252,.1); border: 1px solid rgba(124,92,252,.2); color: #a78bfa; }
+.apr-badge.plin    { background: rgba(0,188,212,.1);  border: 1px solid rgba(0,188,212,.2);  color: #22d3ee; }
+.apr-badge.paypal  { background: rgba(0,156,222,.1);  border: 1px solid rgba(0,156,222,.2);  color: #60a5fa; }
+.apr-date { font-size: .65rem; color: var(--mu); flex-shrink: 0; }
+.b-rev { padding: 3px 9px; border-radius: 7px; background: transparent; border: 1px solid var(--b2); color: var(--mu); font-size: .63rem; cursor: pointer; transition: border-color .2s, color .2s; }
+.b-rev:hover { border-color: var(--re); color: var(--re); }
+
+.aff-item { display: flex; align-items: center; justify-content: space-between; padding: 9px 12px; background: var(--s2); border-radius: 10px; margin-bottom: 7px; }
+.aff-code { font-family: 'Montserrat', sans-serif; font-weight: 700; font-size: .84rem; color: var(--ac2); }
+.aff-uses { font-size: .68rem; color: var(--mu); }
+.btn-add-aff { width: 100%; padding: 9px; background: rgba(124,92,252,.08); border: 1px dashed rgba(124,92,252,.28); color: var(--ac2); border-radius: 9px; font-size: .76rem; font-weight: 600; cursor: pointer; font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 5px; transition: background .2s; margin-top: 3px; }
+.btn-add-aff:hover { background: rgba(124,92,252,.16); }
+
+.log-list { display: flex; flex-direction: column; gap: 5px; max-height: 200px; overflow-y: auto; }
+.log-item { display: flex; align-items: center; gap: 8px; padding: 7px 12px; background: var(--s2); border-radius: 9px; font-size: .74rem; }
+.log-dot { width: 6px; height: 6px; border-radius: 50%; flex-shrink: 0; }
+.log-dot.lg{background:var(--gr)} .log-dot.lr{background:var(--re)} .log-dot.ly{background:var(--ye)}
+.log-txt { flex: 1; }
+.log-time { font-size: .63rem; color: var(--mu); flex-shrink: 0; }
+
+.cfg-row { display: flex; gap: 9px; align-items: flex-end; margin-bottom: 10px; }
+.cfg-row .adm-inp { margin-bottom: 0; flex: 1; }
+.btn-save { padding: 10px 16px; background: var(--ac); color: #000; font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: .8rem; border: none; border-radius: 10px; cursor: pointer; display: flex; align-items: center; gap: 5px; white-space: nowrap; transition: opacity .2s; }
+.btn-save:hover { opacity: .87; }
+.cfg-label { font-size: .63rem; font-weight: 700; color: var(--mu); text-transform: uppercase; letter-spacing: .09em; margin-bottom: 5px; display: block; }
+
+.empty-state { text-align: center; padding: 24px; color: var(--mu); font-size: .77rem; }
+.empty-state svg { width: 24px; height: 24px; opacity: .26; display: block; margin: 0 auto 7px; }
+
+/* ═══════════════════════════════
+   CURRENCY BOX
+═══════════════════════════════ */
+.currency-box {
+  display: flex; align-items: center; gap: 10px;
+  padding: 11px 14px; margin-bottom: 14px;
+  background: linear-gradient(135deg,rgba(200,255,87,.07),rgba(124,92,252,.06));
+  border: 1px solid rgba(200,255,87,.18); border-radius: 12px;
+}
+.currency-flag { font-size: 1.6rem; line-height: 1; flex-shrink: 0; }
+.currency-info { flex: 1; min-width: 0; }
+.currency-amount { font-family: 'Montserrat', sans-serif; font-size: 1.15rem; font-weight: 900; color: var(--ac); }
+.currency-sub { font-size: .65rem; color: var(--mu); margin-top: 1px; }
+.currency-badge {
+  display: inline-flex; align-items: center; gap: 4px;
+  padding: 3px 9px; background: rgba(200,255,87,.08); border: 1px solid rgba(200,255,87,.18);
+  border-radius: 999px; font-size: .6rem; font-weight: 700; color: var(--ac); white-space: nowrap; flex-shrink: 0;
+}
+
+/* ═══════════════════════════════
+   CARD VISUAL
+═══════════════════════════════ */
+.card-visual { transition: transform .6s ease;
+  background: linear-gradient(135deg,#1a1a3a,#2d1b69 50%,#1a2855);
+  border-radius: 14px; padding: 18px 20px 16px;
+  margin-bottom: 16px; position: relative; overflow: hidden;
+  box-shadow: 0 8px 32px rgba(0,0,0,.4);
+}
+.card-visual::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 20% 50%, rgba(200,255,87,.08) 0%, transparent 55%),
+              radial-gradient(circle at 80% 20%, rgba(124,92,252,.15) 0%, transparent 50%);
+}
+.cv-chip { position: relative; z-index: 1; margin-bottom: 14px; }
+.cv-network { position: absolute; top: 16px; right: 18px; z-index: 1; }
+.cv-number {
+  font-family: 'Montserrat', sans-serif; font-size: 1.05rem; font-weight: 700;
+  letter-spacing: .18em; color: rgba(255,255,255,.9);
+  margin-bottom: 14px; position: relative; z-index: 1;
+}
+.cv-bottom { display: flex; gap: 22px; position: relative; z-index: 1; }
+.cv-label { font-size: .55rem; text-transform: uppercase; letter-spacing: .1em; color: rgba(255,255,255,.45); margin-bottom: 2px; }
+.cv-value { font-family: 'Montserrat', sans-serif; font-size: .82rem; font-weight: 700; color: rgba(255,255,255,.88); letter-spacing: .06em; }
+
+/* ═══════════════════════════════
+   CARD FIELDS
+═══════════════════════════════ */
+.card-fields { margin-bottom: 14px; }
+.cf-group { margin-bottom: 10px; }
+.cf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.cf-label {
+  display: block; font-size: .63rem; font-weight: 700;
+  color: var(--mu); letter-spacing: .09em; text-transform: uppercase; margin-bottom: 5px;
+}
+.cf-input-wrap {
+  display: flex; align-items: center; gap: 9px;
+  padding: 0 13px; background: var(--s2); border: 1px solid var(--b2); border-radius: 10px;
+  transition: border-color .2s, box-shadow .2s;
+}
+.cf-input-wrap:focus-within {
+  border-color: rgba(200,255,87,.4); box-shadow: 0 0 0 3px rgba(200,255,87,.07);
+}
+.cf-icon { flex-shrink: 0; color: var(--mu); }
+.cf-input {
+  flex: 1; padding: 11px 0; background: transparent; border: none;
+  color: var(--tx); font-family: 'DM Sans', sans-serif; font-size: .88rem;
+  outline: none; min-width: 0;
+}
+.cf-input::placeholder { color: var(--mu); }
+#cf-pan { font-family: 'Montserrat', sans-serif; font-size: .92rem; letter-spacing: .1em; }
+.card-brands {
+  display: flex; align-items: center; gap: 7px; margin: 10px 0 12px;
+  font-size: .65rem; color: var(--mu);
+}
+.card-brands svg { border-radius: 4px; opacity: .7; transition: opacity .2s; }
+.card-brands svg:hover { opacity: 1; }
+
+/* ═══════════════════════════════
+   TOAST
+═══════════════════════════════ */
+.toast {
+  position: fixed; bottom: 22px; right: 22px; z-index: 9999;
+  padding: 11px 17px; border-radius: 12px; font-size: .8rem; font-weight: 600;
+  transform: translateY(16px); opacity: 0; transition: all .3s; pointer-events: none;
+  display: flex; align-items: center; gap: 7px;
+}
+.toast.ok  { background: rgba(34,197,94,.13);  border: 1px solid rgba(34,197,94,.26);  color: #4ade80; }
+.toast.err { background: rgba(239,68,68,.13);  border: 1px solid rgba(239,68,68,.26);  color: #f87171; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast svg { width: 14px; height: 14px; flex-shrink: 0; }
+
+/* ═══════════════════════════════
+   RESPONSIVE
+═══════════════════════════════ */
+@media (max-width: 768px) {
+  .sidebar { transform: translateX(-100%); }
+  .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; padding-top: 56px; }
+  .mob-header { display: flex; }
+  .topbar { padding: 20px 16px 0; }
+  .content { padding: 22px 16px 48px; }
+  .video-grid, .redes-grid { grid-template-columns: 1fr; }
+  .topbar h1 { font-size: 1.55rem; }
+  .live-pill { display: none; }
+  .frow, .pm-grid { grid-template-columns: 1fr; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .adm-grid { grid-template-columns: 1fr; }
+  .adm-card.full { grid-column: 1; }
+  .adm-row { flex-direction: column; }
+  .adm-inp, .btn-approve, .btn-add-user { width: 100%; justify-content: center; }
+  .mb-grid { grid-template-columns: 1fr; }
+}
+@media (min-width: 769px) {
+  .mob-header { display: none !important; }
+  .sb-backdrop { display: none !important; }
 }
 </style>
 </head>
 <body>
+
+<!-- ════════════════════════════════
+     TOAST
+════════════════════════════════ -->
 <div class="toast" id="toast"></div>
 
-<!-- LOGIN -->
-<div id="login-gate">
- <div class="gate-wrap">
-  <div class="gate-logo">
-   <div class="gate-logo-img"><img src="Joss.png" alt="Joss" onerror="this.parentElement.style.display='none'"/></div>
-   <div class="gate-logo-brand">JOSS <span>DESIGN</span></div>
-   <div class="gate-logo-sub">Panel de Administración</div>
+<!-- ════════════════════════════════
+     ADMIN PASSWORD MODAL
+════════════════════════════════ -->
+<div class="adm-pass-bg" id="adm-pass-bg">
+  <div class="adm-pass-card">
+    <div class="adm-pass-head">
+      <div class="adm-pass-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      </div>
+      <div class="adm-pass-title">Panel Admin</div>
+      <div class="adm-pass-sub">Contraseña secreta</div>
+    </div>
+    <div class="adm-pass-body">
+      <input class="adm-pass-input" id="adm-pass-input" type="password" placeholder="••••" maxlength="20"
+        onkeydown="if(event.key==='Enter') checkAdminPass()"/>
+      <div class="adm-pass-err" id="adm-pass-err">Contraseña incorrecta.</div>
+      <button class="btn-main" onclick="checkAdminPass()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+        Ingresar
+      </button>
+      <span class="adm-pass-cancel" onclick="closeAdminPass()">Cancelar</span>
+    </div>
   </div>
-  <div class="gate-card">
-   <div class="gate-head">
-    <div class="gate-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
-    <div class="gate-title">Acceso Seguro</div>
-    <div class="gate-sub">Solo administradores</div>
-   </div>
-   <div class="gate-body">
-    <label class="flabel">Correo de administrador</label>
-    <input class="finput" id="g-email" type="email" placeholder="admin@jossdesign.com"/>
-    <label class="flabel">Contraseña</label>
-    <input class="finput" id="g-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter')gateLogin()"/>
-    <button class="btn-main" onclick="gateLogin()">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
-     Ingresar al panel
+</div>
+
+<!-- ════════════════════════════════
+     ADMIN PANEL
+════════════════════════════════ -->
+<div id="admin-panel">
+  <div class="adm-top">
+    <div class="adm-top-left">
+      <div class="adm-logo" onclick="exitAdmin()">
+        <img src="Joss.png" alt=""/>
+      </div>
+      <div class="adm-brand">JOSS <span>DESIGN</span></div>
+      <span class="adm-badge-red">Admin</span>
+      <span class="adm-time" id="adm-time"></span>
+    </div>
+    <button class="btn-adm-exit" onclick="exitAdmin()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+      Volver al sitio
     </button>
-    <div class="fmsg" id="g-msg"></div>
-   </div>
   </div>
- </div>
+  <div class="adm-body">
+    <div class="adm-inner">
+      <div class="stats-row" id="adm-stats"></div>
+
+      <!-- Quick approve -->
+      <div class="adm-box purple">
+        <div class="adm-box-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+          Aprobar por número de orden
+        </div>
+        <div class="adm-box-sub">Escribe el número de orden del comprobante y activa el acceso inmediatamente.</div>
+        <div class="adm-row">
+          <input class="adm-inp mono" id="qb-inp" type="text" placeholder="JD-XXXXX-XXXX" onkeydown="if(event.key==='Enter') quickApprove()"/>
+          <button class="btn-approve" onclick="quickApprove()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+            Aprobar acceso
+          </button>
+        </div>
+        <div class="adm-msg" id="qb-msg"></div>
+      </div>
+
+      <!-- Manual user -->
+      <div class="adm-box green">
+        <div class="adm-box-title">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+          Agregar usuario manualmente
+        </div>
+        <div class="adm-box-sub">Para personas que pagaron fuera de la plataforma.</div>
+        <div class="mb-grid">
+          <div class="mb-field">
+            <span class="mb-lbl">Correo</span>
+            <input class="adm-inp" id="mu-email" type="email" placeholder="correo@ejemplo.com"/>
+          </div>
+          <div class="mb-field">
+            <span class="mb-lbl">Contraseña temporal</span>
+            <input class="adm-inp" id="mu-pass" type="text" placeholder="mín. 6 caracteres"/>
+          </div>
+          <div class="mb-field">
+            <span class="mb-lbl">Nombre (opcional)</span>
+            <input class="adm-inp" id="mu-name" type="text" placeholder="Nombre completo"/>
+          </div>
+          <button class="btn-add-user" onclick="addManualUser()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
+            Dar acceso
+          </button>
+        </div>
+        <div class="adm-msg" id="mu-msg"></div>
+      </div>
+
+      <div class="adm-grid" id="adm-grid"></div>
+    </div>
+  </div>
 </div>
 
-<!-- ADMIN APP -->
-<div id="admin-app">
- <div class="top-bar">
-  <div class="top-left">
-   <div class="top-logo"><img src="Joss.png" alt="" onerror="this.parentElement.style.display='none'"/></div>
-   <div class="top-brand">JOSS <span>DESIGN</span></div>
-   <span class="adm-badge">Admin</span>
-   <span class="top-time" id="top-time"></span>
+<!-- ════════════════════════════════
+     CHECKOUT MODAL
+════════════════════════════════ -->
+<div class="modal-bg" id="modal-bg" onclick="modalBgClick(event)">
+  <div class="modal" id="modal-box">
+    <div class="modal-head">
+      <button class="modal-close" onclick="closeModal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+      </button>
+      <div class="modal-head-row">
+        <div class="modal-logo"><img src="Joss.png" alt="" onerror="this.style.display='none'"/></div>
+        <div>
+          <div class="modal-brand">JOSS <span>DESIGN</span></div>
+          <div class="modal-sub">Checkout seguro</div>
+        </div>
+        <div class="ssl-badge">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="9" height="9"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          SSL · PCI DSS
+        </div>
+      </div>
+    </div>
+    <div class="modal-tabs">
+      <div class="modal-tab active" id="tab-buy" onclick="switchTab('buy')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>
+        Comprar curso
+      </div>
+      <div class="modal-tab" id="tab-login" onclick="switchTab('login')">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Ya tengo acceso
+      </div>
+    </div>
+    <div class="modal-body">
+
+      <!-- LOGIN -->
+      <div class="modal-step" id="step-login">
+        <label class="flabel">Correo electrónico</label>
+        <input class="finput" id="l-email" type="email" placeholder="tu@correo.com"/>
+        <label class="flabel">Contraseña</label>
+        <input class="finput" id="l-pass" type="password" placeholder="••••••••" onkeydown="if(event.key==='Enter') doLogin()"/>
+        <button class="btn-main" onclick="doLogin()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+          Ingresar al curso
+        </button>
+        <div class="fmsg" id="l-msg"></div>
+        <p style="margin-top:12px;text-align:center;font-size:.72rem;color:var(--mu)">
+          ¿Sin cuenta? <span style="color:var(--ac);cursor:pointer;font-weight:700" onclick="switchTab('buy')">Comprar curso</span>
+        </p>
+      </div>
+
+      <!-- PASO 1: FACTURACIÓN -->
+      <div class="modal-step active" id="step-billing">
+        <div class="order-sum">
+          <div class="title">Resumen del pedido</div>
+          <div class="sum-row"><span class="sum-label">Curso completo Joss Design</span><span class="sum-val" id="price-show">US$ 0.01</span></div>
+          <div class="sum-row"><span class="sum-label">Acceso de por vida</span><span class="sum-val" style="color:var(--gr)">✓ Incluido</span></div>
+          <div class="sum-row"><span class="sum-total-label">Total</span><span class="sum-total-val" id="price-total">US$ 0.01</span></div>
+        </div>
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:11px;display:flex;align-items:center;gap:7px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          Datos de facturación
+        </div>
+        <div class="frow">
+          <div><label class="flabel">Nombre</label><input class="finput" id="b-fname" type="text" placeholder="Juan"/></div>
+          <div><label class="flabel">Apellido</label><input class="finput" id="b-lname" type="text" placeholder="Pérez"/></div>
+        </div>
+        <label class="flabel">Correo electrónico</label>
+        <input class="finput" id="b-email" type="email" placeholder="tu@correo.com"/>
+        <div class="frow">
+          <div>
+            <label class="flabel">País</label>
+            <select class="finput" id="b-country">
+              <option value="">Seleccionar...</option>
+              <option value="PE" selected>🇵🇪 Perú</option>
+              <option value="CO">🇨🇴 Colombia</option>
+              <option value="MX">🇲🇽 México</option>
+              <option value="AR">🇦🇷 Argentina</option>
+              <option value="CL">🇨🇱 Chile</option>
+              <option value="EC">🇪🇨 Ecuador</option>
+              <option value="US">🇺🇸 Estados Unidos</option>
+              <option value="ES">🇪🇸 España</option>
+              <option value="OTHER">Otro</option>
+            </select>
+          </div>
+          <div><label class="flabel">Teléfono</label><input class="finput" id="b-phone" type="tel" placeholder="+51 999 999"/></div>
+        </div>
+        <label class="flabel">Crea tu contraseña de acceso</label>
+        <input class="finput" id="b-pass" type="password" placeholder="Mínimo 6 caracteres"/>
+        <div class="aff-toggle" onclick="toggleAff()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87M16 3.13a4 4 0 010 7.75"/></svg>
+          ¿Tienes código de afiliado?
+        </div>
+        <div id="aff-field">
+          <label class="flabel">Código de afiliado</label>
+          <input class="finput" id="b-aff" type="text" placeholder="Ej: JOSS10"/>
+        </div>
+        <button class="btn-main" onclick="goToPayment()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Continuar al pago
+        </button>
+        <div class="fmsg" id="billing-msg"></div>
+        <div class="sec-note" style="margin-top:12px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Tus datos están protegidos. Pago certificado PCI DSS.
+        </div>
+      </div>
+
+      <!-- PASO 2: PAGO -->
+      <div class="modal-step" id="step-payment">
+        <div style="font-size:.78rem;font-weight:700;margin-bottom:12px;display:flex;align-items:center;gap:7px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+          Elige cómo pagar
+        </div>
+        <div class="pm-grid">
+          <div class="pm-opt sel" id="pm-izipay" onclick="selectPM('izipay')">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><rect x="1" y="4" width="22" height="16" rx="3" fill="#e30613" opacity=".14"/><rect x="1" y="4" width="22" height="16" rx="3" stroke="#e30613" stroke-width="1.5"/><circle cx="8" cy="12" r="3" fill="#e30613"/><circle cx="16" cy="12" r="3" fill="#e30613" opacity=".5"/></svg>
+            Visa / Débito
+          </div>
+          <div class="pm-opt" id="pm-paypal" onclick="selectPM('paypal')">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10" fill="#003087" opacity=".13"/><path d="M8 17h2l1-3h2.5c2 0 3.5-1 3.5-3s-1.5-3-3.5-3H9L8 17z" stroke="#009cde" stroke-width="1.5" stroke-linejoin="round"/></svg>
+            PayPal
+          </div>
+          <div class="pm-opt" id="pm-yape" onclick="selectPM('yape')">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10" fill="#7b2ff7" opacity=".13"/><path d="M8 6l4 6 4-6" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 12v6" stroke="#a855f7" stroke-width="2" stroke-linecap="round"/></svg>
+            Yape
+          </div>
+          <div class="pm-opt" id="pm-plin" onclick="selectPM('plin')">
+            <svg viewBox="0 0 24 24" fill="none" width="18" height="18"><circle cx="12" cy="12" r="10" fill="#00bcd4" opacity=".11"/><path d="M7 12h10M12 7v10" stroke="#00bcd4" stroke-width="2.2" stroke-linecap="round"/></svg>
+            Plin
+          </div>
+        </div>
+
+        <!-- Izipay — custom card form -->
+        <div id="pm-detail-izipay">
+          <!-- currency box -->
+          <div class="currency-box" id="currency-box">
+            <div class="currency-flag" id="currency-flag">🇵🇪</div>
+            <div class="currency-info">
+              <div class="currency-amount" id="currency-amount">US$ 0.01</div>
+              <div class="currency-sub" id="currency-sub">Precio en tu moneda local</div>
+            </div>
+            <div class="currency-badge">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="10" height="10"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 000 7h5a3.5 3.5 0 010 7H6"/></svg>
+              Auto
+            </div>
+          </div>
+          <!-- card visual -->
+          <div class="card-visual" id="card-visual">
+            <div class="cv-chip">
+              <svg viewBox="0 0 30 24" fill="none" width="30" height="24">
+                <rect x="1" y="1" width="28" height="22" rx="4" fill="#c8a020" opacity=".7"/>
+                <rect x="8" y="7" width="14" height="10" rx="2" fill="none" stroke="#f0d060" stroke-width="1"/>
+                <line x1="15" y1="7" x2="15" y2="17" stroke="#f0d060" stroke-width="1"/>
+                <line x1="8" y1="12" x2="22" y2="12" stroke="#f0d060" stroke-width="1"/>
+              </svg>
+            </div>
+            <div class="cv-network" id="cv-network">
+              <svg viewBox="0 0 50 30" fill="none" width="50" height="30">
+                <circle cx="18" cy="15" r="12" fill="#eb001b" opacity=".85"/>
+                <circle cx="32" cy="15" r="12" fill="#f79e1b" opacity=".85"/>
+                <path d="M25 5.5a12 12 0 010 19" fill="#ff5f00" opacity=".7"/>
+              </svg>
+            </div>
+            <div class="cv-number" id="cv-number">•••• •••• •••• ••••</div>
+            <div class="cv-bottom">
+              <div>
+                <div class="cv-label">Titular</div>
+                <div class="cv-value" id="cv-holder">NOMBRE APELLIDO</div>
+              </div>
+              <div>
+                <div class="cv-label">Vence</div>
+                <div class="cv-value" id="cv-exp">MM/AA</div>
+              </div>
+            </div>
+          </div>
+          <!-- card fields -->
+          <div class="card-fields">
+            <div class="cf-group">
+              <label class="cf-label">Número de tarjeta</label>
+              <div class="cf-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="16" height="16" class="cf-icon"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+                <input class="cf-input" id="cf-pan" type="text" inputmode="numeric" placeholder="0000 0000 0000 0000" maxlength="19" autocomplete="cc-number"/>
+              </div>
+            </div>
+            <div class="cf-row">
+              <div class="cf-group">
+                <label class="cf-label">Fecha de vencimiento</label>
+                <div class="cf-input-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" class="cf-icon"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+                  <input class="cf-input" id="cf-exp" type="text" inputmode="numeric" placeholder="MM/AA" maxlength="5" autocomplete="cc-exp"/>
+                </div>
+              </div>
+              <div class="cf-group">
+                <label class="cf-label">CVV / CVC</label>
+                <div class="cf-input-wrap">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" class="cf-icon"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+                  <input class="cf-input" id="cf-cvv" type="text" inputmode="numeric" placeholder="•••" maxlength="4" autocomplete="cc-csc"/>
+                </div>
+              </div>
+            </div>
+            <div class="cf-group">
+              <label class="cf-label">Nombre del titular</label>
+              <div class="cf-input-wrap">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" width="15" height="15" class="cf-icon"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <input class="cf-input" id="cf-name" type="text" placeholder="Como aparece en la tarjeta" autocomplete="cc-name" style="text-transform:uppercase"/>
+              </div>
+            </div>
+          </div>
+          <div class="izipay-err-box" id="iz-err"></div>
+          <button class="btn-main" id="btn-pay-card" onclick="submitCardPayment()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span id="btn-pay-card-label">Pagar US$ 0.01</span>
+          </button>
+          <div class="card-brands">
+            <span>Aceptamos</span>
+            <svg viewBox="0 0 60 38" fill="none" height="22" title="Visa"><rect width="60" height="38" rx="4" fill="#1a1f71"/><text x="30" y="26" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white" letter-spacing="1">VISA</text></svg>
+            <svg viewBox="0 0 60 38" fill="none" height="22" title="Mastercard"><rect width="60" height="38" rx="4" fill="#252525"/><circle cx="23" cy="19" r="11" fill="#eb001b"/><circle cx="37" cy="19" r="11" fill="#f79e1b" opacity=".85"/></svg>
+            <svg viewBox="0 0 60 38" fill="none" height="22" title="Amex"><rect width="60" height="38" rx="4" fill="#2671b9"/><text x="30" y="26" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="white">AMEX</text></svg>
+          </div>
+          <!-- Hidden KR form (still needed by Izipay SDK) -->
+          <div style="display:none">
+            <div class="kr-embedded" id="kr-hidden">
+              <div class="kr-pan"></div>
+              <div class="kr-expiry"></div>
+              <div class="kr-security-code"></div>
+              <button class="kr-payment-button"></button>
+              <div class="kr-form-error"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- PayPal -->
+        <div id="pm-detail-paypal" style="display:none">
+          <div class="manual-card">
+            <div class="manual-name pp-grad">PayPal</div>
+            <div class="manual-num" style="font-size:1rem;letter-spacing:0"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="57353b36343c3d3824223266666417303a363e3b7934383a">[email&#160;protected]</a></div>
+            <div class="manual-sub">Enviar como "pago de bienes/servicios"</div>
+            <button class="copy-btn" style="margin:7px auto 0;display:flex" onclick="copyTxt('blackjosue113@gmail.com',this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="9" height="9"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+              Copiar
+            </button>
+            <div class="price-tag" id="pp-price">💰 US$ 0.01</div>
+          </div>
+        </div>
+
+        <!-- Yape -->
+        <div id="pm-detail-yape" style="display:none">
+          <div class="manual-card">
+            <div class="manual-name yape-grad">yape</div>
+            <div class="manual-num">915 150 077</div>
+            <div class="manual-sub">Josb Design</div>
+            <div class="price-tag" id="yape-price">💰 US$ 0.01</div>
+          </div>
+          <ul class="pay-steps">
+            <li><span class="sn">1</span>Yapea al <strong>915 150 077</strong> por el monto indicado.</li>
+            <li><span class="sn">2</span>En el concepto escribe tu correo y número de orden.</li>
+            <li><span class="sn">3</span>Toca "Ya yapié" para registrar tu solicitud.</li>
+          </ul>
+        </div>
+
+        <!-- Plin -->
+        <div id="pm-detail-plin" style="display:none">
+          <div class="manual-card">
+            <div class="manual-name plin-grad">plin</div>
+            <div class="manual-num">915 150 077</div>
+            <div class="manual-sub">Josb Design</div>
+            <div class="price-tag" id="plin-price">💰 US$ 0.01</div>
+          </div>
+          <ul class="pay-steps">
+            <li><span class="sn">1</span>Plínea al <strong>915 150 077</strong> desde tu app bancaria.</li>
+            <li><span class="sn">2</span>En el concepto escribe tu correo y número de orden.</li>
+            <li><span class="sn">3</span>Toca "Ya pagué" para registrar tu solicitud.</li>
+          </ul>
+        </div>
+
+        <!-- Order box (manual methods) -->
+        <div class="order-box" id="order-box" style="display:none">
+          <div>
+            <div class="ob-label">Número de orden</div>
+            <div class="ob-num" id="order-num-display">—</div>
+          </div>
+          <button class="copy-btn" onclick="copyTxt(document.getElementById('order-num-display').textContent,this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="9" height="9"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+            Copiar
+          </button>
+        </div>
+
+        <!-- Manual submit -->
+        <div id="manual-submit-wrap" style="display:none">
+          <button class="btn-main" id="btn-manual" onclick="submitManual()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+            <span id="btn-manual-label">Confirmar y enviar comprobante</span>
+          </button>
+        </div>
+
+        <div class="fmsg" id="pay-msg"></div>
+
+        <!-- WA + status (after manual submit) -->
+        <div id="wa-section" style="display:none">
+          <div class="div-or">envía tu comprobante</div>
+          <a id="wa-btn" href="#" target="_blank" class="btn-wa">
+            <svg viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+            Enviar comprobante por WhatsApp
+          </a>
+          <div class="status-box">
+            <div class="title">Estado de tu solicitud</div>
+            <div class="st-step">
+              <div class="st-ic done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div><div class="st-label">Solicitud enviada</div><div class="st-desc">Registro guardado. Envía el comprobante por WhatsApp.</div></div>
+            </div>
+            <div class="st-step">
+              <div class="st-ic spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div><div class="st-label">En revisión</div><div class="st-desc">Verificando comprobante. Menos de 24 horas.</div></div>
+            </div>
+            <div class="st-step">
+              <div class="st-ic wait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+              <div><div class="st-label dim">Acceso activado</div><div class="st-desc">Te avisamos por WhatsApp cuando esté listo.</div></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sec-note" style="margin-top:10px">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+          Izipay · PCI DSS · SSL 256-bit
+        </div>
+        <span class="btn-back" onclick="goBackToBilling()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><path d="M19 12H5M12 5l-7 7 7 7"/></svg>
+          Cambiar datos de facturación
+        </span>
+      </div>
+
+      <!-- ÉXITO -->
+      <div class="modal-step" id="step-success">
+        <div class="center-screen">
+          <div class="big-icon green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+          <div class="screen-title">¡Pago completado!</div>
+          <div class="screen-sub">Tu acceso al curso ha sido activado. ¡Bienvenido a Joss Design!</div>
+          <button class="btn-main" onclick="closeModal()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4M10 17l5-5-5-5M15 12H3"/></svg>
+            Ir al curso
+          </button>
+        </div>
+      </div>
+
+      <!-- PENDIENTE -->
+      <div class="modal-step" id="step-pending">
+        <div class="center-screen">
+          <div class="big-icon yellow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+          <div class="screen-title">Solicitud en revisión</div>
+          <div class="screen-sub">Recibimos tu registro. Activaremos tu acceso en menos de 24 horas después de verificar el comprobante.</div>
+          <div class="pending-order-badge" id="pending-order-badge">Orden: —</div>
+          <div class="status-box" style="text-align:left">
+            <div class="title">Estado actual</div>
+            <div class="st-step">
+              <div class="st-ic done"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></div>
+              <div><div class="st-label">Solicitud enviada</div></div>
+            </div>
+            <div class="st-step">
+              <div class="st-ic spin"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+              <div><div class="st-label">En revisión</div><div class="st-desc">Verificando tu comprobante de pago.</div></div>
+            </div>
+            <div class="st-step">
+              <div class="st-ic wait"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg></div>
+              <div><div class="st-label dim">Acceso activado</div></div>
+            </div>
+          </div>
+          <button class="btn-main" onclick="closeModal()" style="margin-top:14px">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><polyline points="20 6 9 17 4 12"/></svg>
+            Entendido
+          </button>
+        </div>
+      </div>
+
+    </div><!-- /modal-body -->
   </div>
-  <button class="btn-out" onclick="gateLogout()">
-   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
-   Salir
-  </button>
- </div>
-
- <div class="body">
-  <div class="body-inner">
-
-   <!-- STATS -->
-   <div class="stats-row" id="stats-row"></div>
-
-   <!-- QUICK APPROVE BY ORDER -->
-   <div class="quick-box">
-    <div class="qb-title">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-     Aprobar por número de orden
-    </div>
-    <div class="qb-sub">Escribe el número de orden del comprobante y activa el acceso inmediatamente.</div>
-    <div class="qb-row">
-     <input class="qb-inp" id="qb-order" type="text" placeholder="Ej: JD-M5X2A-K9PQ" onkeydown="if(event.key==='Enter')quickApprove()"/>
-     <button class="btn-qa" onclick="quickApprove()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-      Aprobar acceso
-     </button>
-    </div>
-    <div class="fmsg qb-msg" id="qb-msg"></div>
-   </div>
-
-   <!-- MANUAL USER ADD -->
-   <div class="manual-user-box">
-    <div class="mub-title">
-     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-     Agregar usuario manualmente
-    </div>
-    <div class="mub-sub">Para personas que pagaron fuera de la plataforma o a quienes quieras dar acceso directo.</div>
-    <div class="mub-grid">
-     <div class="mub-field">
-      <div class="mub-label">Correo electrónico</div>
-      <input class="mub-inp" id="mu-email" type="email" placeholder="usuario@correo.com"/>
-     </div>
-     <div class="mub-field">
-      <div class="mub-label">Contraseña temporal</div>
-      <input class="mub-inp" id="mu-pass" type="text" placeholder="Mín. 6 caracteres"/>
-     </div>
-     <div class="mub-field">
-      <div class="mub-label">Nombre (opcional)</div>
-      <input class="mub-inp" id="mu-name" type="text" placeholder="Nombre completo"/>
-     </div>
-     <button class="btn-add-user" onclick="addManualUser()">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><path d="M16 21v-2a4 4 0 00-4-4H6a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><line x1="19" y1="8" x2="19" y2="14"/><line x1="22" y1="11" x2="16" y2="11"/></svg>
-      Dar acceso
-     </button>
-    </div>
-    <div class="fmsg mub-msg" id="mu-msg"></div>
-   </div>
-
-   <!-- MAIN GRID -->
-   <div class="main-grid" id="main-grid"></div>
-
-  </div>
- </div>
 </div>
 
-<script>
-// ─── DB (same keys as index.html) ───────────────────────────
-const DB={
-  get:k=>{try{return JSON.parse(localStorage.getItem('jd7_'+k))}catch{return null}},
-  set:(k,v)=>localStorage.setItem('jd7_'+k,JSON.stringify(v))
+<!-- ════════════════════════════════
+     MOBILE HEADER
+════════════════════════════════ -->
+<div class="mob-header" id="mob-header">
+  <div class="mob-logo">
+    <img src="Joss.png" alt="" onclick="handleLogoTap()" onerror="this.style.display='none'"/>
+    JOSS <span>DESIGN</span>
+  </div>
+  <div class="mob-right">
+    <button class="mob-buy-btn" onclick="openCheckout()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="13" height="13"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>
+      Comprar
+    </button>
+    <div class="hamburger" id="hamburger" onclick="toggleSidebar()">
+      <span></span><span></span><span></span>
+    </div>
+  </div>
+</div>
+<div class="sb-backdrop" id="sb-backdrop" onclick="closeSidebar()"></div>
+
+<!-- ════════════════════════════════
+     MAIN APP
+════════════════════════════════ -->
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-img" id="logo-tap" onclick="handleLogoTap()" title="Joss Design">
+        <img src="Joss.png" alt="Joss" onerror="this.style.display='none'"/>
+      </div>
+      <div class="sb-logo-text">
+        <div class="brand">JOSS <span>DESIGN</span></div>
+        <div class="tag">Plataforma de Cursos</div>
+      </div>
+    </div>
+
+    <div class="sb-user" id="sb-user">
+      <div class="lbl">Sesión activa</div>
+      <div class="email" id="sb-email">—</div>
+      <div class="badge">Acceso verificado</div>
+    </div>
+
+    <div class="sb-actions" id="sb-actions">
+      <button class="btn-buy" onclick="openCheckout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>
+        Comprar Curso
+      </button>
+      <button class="btn-access" onclick="openLogin()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
+        Ya tengo acceso
+      </button>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-section">
+      <div class="sb-section-label">Contenido</div>
+      <div class="nav-item active" onclick="showPanel('videos', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8M12 17v4"/><polygon points="10,8 16,11 10,14" fill="currentColor" stroke="none"/></svg>
+        Videos
+      </div>
+      <div class="nav-item" onclick="showPanel('instalacion', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Instalación
+      </div>
+      <div class="nav-item" onclick="showPanel('redes', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+        Redes
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <button class="btn-logout" id="btn-logout" onclick="doLogout()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="13" height="13"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+        Cerrar sesión
+      </button>
+      <p>© 2025 Joss Design</p>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main class="main">
+    <div class="topbar">
+      <div>
+        <h1 id="page-h1">Mis <em>Videos</em></h1>
+        <p id="page-p">Aprende diseño e inteligencia artificial con Joss Design.</p>
+      </div>
+      <div class="live-pill">En curso</div>
+    </div>
+    <div class="content">
+
+      <!-- VIDEOS -->
+      <div class="panel active" id="panel-videos">
+        <div class="section-title">Módulos del curso</div>
+        <div class="video-grid">
+
+          <div class="video-card" id="vc1">
+            <div class="thumb thumb-1">
+              <span class="vnum">01</span>
+              <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </div>
+            <div class="vinfo">
+              <div class="vtag">Módulo 01</div>
+              <h3>Introducción</h3>
+              <div class="vmeta"><span>Joss Design</span><span class="vmeta-dot"></span><span>Inicio del curso</span></div>
+            </div>
+          </div>
+
+          <div class="video-card" id="vc2">
+            <div class="thumb thumb-2">
+              <span class="vnum">02</span>
+              <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </div>
+            <div class="vinfo">
+              <div class="vtag">Módulo 02</div>
+              <h3>Manejo de los Prompts en Gemini</h3>
+              <div class="vmeta"><span>Joss Design</span><span class="vmeta-dot"></span><span>IA &amp; Prompts</span></div>
+            </div>
+          </div>
+
+          <div class="video-card" id="vc3">
+            <div class="thumb thumb-3">
+              <span class="vnum">03</span>
+              <div class="play-btn"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </div>
+            <div class="vinfo">
+              <div class="vtag">Módulo 03</div>
+              <h3>Cómo Incorporar la IA en tus Diseños</h3>
+              <div class="vmeta"><span>Joss Design</span><span class="vmeta-dot"></span><span>Diseño + IA</span></div>
+            </div>
+          </div>
+
+          <div class="video-card" id="vc4">
+            <div class="thumb thumb-4">
+              <span class="vnum">04</span>
+              <span class="coming-badge">Próximamente</span>
+              <div class="play-btn" style="opacity:.3;pointer-events:none"><svg viewBox="0 0 24 24"><polygon points="5,3 19,12 5,21"/></svg></div>
+            </div>
+            <div class="vinfo">
+              <div class="vtag">Módulo 04</div>
+              <h3>Video 4 — Próximamente</h3>
+              <div class="vmeta"><span>Joss Design</span><span class="vmeta-dot"></span><span>En preparación</span></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- INSTALACION -->
+      <div class="panel" id="panel-instalacion">
+        <div class="section-title">Instalación</div>
+        <div class="placeholder">
+          <div class="ph-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
+          </div>
+          <h2>Contenido en preparación</h2>
+          <p>Esta sección estará disponible muy pronto con guías de instalación y recursos.</p>
+          <div class="coming-pill">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="11" height="11"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Próximamente
+          </div>
+        </div>
+      </div>
+
+      <!-- REDES -->
+      <div class="panel" id="panel-redes">
+        <div class="section-title">Redes sociales</div>
+        <div class="redes-grid">
+
+          <a class="red-card red-tiktok" href="https://www.tiktok.com/@josb.design" target="_blank">
+            <div class="rring"></div><div class="rring2"></div>
+            <div class="red-icon">
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.77.01 2.89 2.89 0 012.89-2.9c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-6.13 6.33 6.34 6.34 0 0012.67 0V8.68a8.18 8.18 0 004.78 1.53V6.76a4.85 4.85 0 01-1.01-.07z" fill="#EE1D52"/>
+                <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.77.01 2.89 2.89 0 012.89-2.9c.28 0 .54.04.79.1V9.01a6.34 6.34 0 00-6.13 6.33 6.34 6.34 0 0012.67 0V8.68a8.18 8.18 0 004.78 1.53V6.76a4.85 4.85 0 01-1.01-.07z" fill="#69C9D0" opacity=".45"/>
+              </svg>
+            </div>
+            <div class="red-info">
+              <div class="red-platform">TikTok</div>
+              <div class="red-handle">@josb.design</div>
+              <div class="red-sub">Contenido diario de diseño e IA</div>
+            </div>
+            <span class="red-cta">
+              Ver perfil
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+          <a class="red-card red-wa" href="https://wa.me/51915150077" target="_blank">
+            <div class="rring"></div><div class="rring2"></div>
+            <div class="red-icon">
+              <svg viewBox="0 0 24 24" fill="#25D366">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+              </svg>
+            </div>
+            <div class="red-info">
+              <div class="red-platform">WhatsApp</div>
+              <div class="red-handle">+51 915 150 077</div>
+              <div class="red-sub">Consultas y soporte directo</div>
+            </div>
+            <span class="red-cta">
+              Escribir
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+            </span>
+          </a>
+
+        </div>
+      </div>
+
+    </div>
+  </main>
+</div>
+
+<!-- ════════════════════════════════
+     JAVASCRIPT
+════════════════════════════════ -->
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+'use strict';
+
+/* ─── CONFIG ─── */
+const BACKEND   = 'https://josb-design-production.up.railway.app';
+const ADMIN_PWD = '1234';       // contraseña para abrir el panel admin
+const PRICE_PEN = 4;           // 4 centavos de sol = ~$0.01 USD
+const PRICE_TXT = 'US$ 0.01'; // texto que se muestra
+
+/* ─── STORAGE ─── */
+const K = 'jd9_';
+const db = {
+  get : k => { try { return JSON.parse(localStorage.getItem(K+k)); } catch(e) { return null; } },
+  set : (k,v) => { try { localStorage.setItem(K+k, JSON.stringify(v)); } catch(e) {} }
 };
-const getUsers  =()=>DB.get('u')||{};
-const getPending=()=>DB.get('p')||[];
-const getAffs   =()=>DB.get('a')||{JOSS10:0,DESIGN20:0};
-const getLog    =()=>DB.get('log')||[];
-const saveUsers  =v=>DB.set('u',v);
-const savePending=v=>DB.set('p',v);
-const saveAffs   =v=>DB.set('a',v);
-const saveLog    =v=>DB.set('log',v);
+const getUsers   = () => db.get('u') || {};
+const getPending = () => db.get('p') || [];
+const getAffs    = () => db.get('a') || { JOSS10: 0, DESIGN20: 0 };
+const getLog     = () => db.get('l') || [];
+const getSession = () => db.get('s') || null;
+const saveUsers   = v => db.set('u', v);
+const savePending = v => db.set('p', v);
+const saveAffs    = v => db.set('a', v);
+const saveLog     = v => db.set('l', v);
+const saveSession = v => db.set('s', v);
 
-(()=>{const u=getUsers();if(!u['admin@jossdesign.com']){u['admin@jossdesign.com']={pass:'admin1234',role:'admin',since:'-'};saveUsers(u);}})();
+/* ensure admin user exists */
+(function() {
+  const u = getUsers();
+  if (!u['admin']) {
+    u['admin'] = { pass: 'admin1234', role: 'admin' };
+    saveUsers(u);
+  }
+})();
 
-function addLog(txt,type='lg'){const l=getLog();l.unshift({txt,type,time:new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'})});if(l.length>60)l.length=60;saveLog(l);}
-
-// ─── TOAST ───────────────────────────────────────────────────
-function showToast(txt,err=false){
-  const t=document.getElementById('toast');
-  t.innerHTML=(err
-    ?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
-    :'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
-  )+txt;
-  t.className='toast '+(err?'err-t':'ok-t');
-  void t.offsetWidth;t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3200);
+function addLog(txt, type) {
+  const l = getLog();
+  l.unshift({ txt, type: type||'lg', time: new Date().toLocaleTimeString('es',{hour:'2-digit',minute:'2-digit'}) });
+  if (l.length > 60) l.length = 60;
+  saveLog(l);
 }
 
-// ─── LOGIN ───────────────────────────────────────────────────
-function gateLogin(){
-  const e=document.getElementById('g-email').value.trim().toLowerCase();
-  const p=document.getElementById('g-pass').value;
-  const m=document.getElementById('g-msg');m.className='fmsg';
-  if(!e||!p){m.className='fmsg err';m.textContent='Completa los campos.';return;}
-  const u=getUsers();
-  if(!u[e]||u[e].role!=='admin'||u[e].pass!==p){m.className='fmsg err';m.textContent='Credenciales incorrectas.';return;}
-  document.getElementById('login-gate').classList.add('hidden');
-  document.getElementById('admin-app').classList.add('on');
-  renderAll();startClock();
-}
-function gateLogout(){
-  document.getElementById('admin-app').classList.remove('on');
-  document.getElementById('login-gate').classList.remove('hidden');
-}
-function startClock(){
-  const el=document.getElementById('top-time');
-  const tick=()=>el.textContent=new Date().toLocaleString('es',{weekday:'short',day:'2-digit',month:'short',hour:'2-digit',minute:'2-digit'});
-  tick();setInterval(tick,30000);
+/* ─── TOAST ─── */
+function toast(txt, ok) {
+  const t = document.getElementById('toast');
+  t.innerHTML = (ok
+    ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>'
+    : '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>'
+  ) + txt;
+  t.className = 'toast ' + (ok ? 'ok' : 'err');
+  void t.offsetWidth;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
 }
 
-// ─── QUICK APPROVE ───────────────────────────────────────────
-function quickApprove(){
-  const order=document.getElementById('qb-order').value.trim().toUpperCase();
-  const m=document.getElementById('qb-msg');m.className='fmsg';
-  if(!order){m.className='fmsg err';m.textContent='Escribe el número de orden.';return;}
-  const pending=getPending();
-  const idx=pending.findIndex(p=>p.order&&p.order.toUpperCase()===order);
-  if(idx===-1){m.className='fmsg err';m.textContent='Número de orden no encontrado.';return;}
-  const p=pending[idx];const u=getUsers();
-  u[p.email]={pass:p.pass,role:'approved',since:new Date().toLocaleDateString('es'),method:p.method,affiliate:p.affiliate,order:p.order,name:p.name};
-  saveUsers(u);pending.splice(idx,1);savePending(pending);
-  addLog('Aprobado por orden '+p.order+': '+p.email,'lg');
-  document.getElementById('qb-order').value='';
-  m.className='fmsg ok';m.textContent='✅ Acceso activado para '+p.email;
-  showToast('Acceso activado: '+p.email);renderAll();
-  setTimeout(()=>{m.className='fmsg';},5000);
+/* ─── MOBILE SIDEBAR ─── */
+function toggleSidebar() {
+  const sb = document.getElementById('sidebar');
+  const hb = document.getElementById('hamburger');
+  const bd = document.getElementById('sb-backdrop');
+  const open = sb.classList.toggle('open');
+  hb.classList.toggle('open', open);
+  bd.classList.toggle('show', open);
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+  document.getElementById('sb-backdrop').classList.remove('show');
 }
 
-// ─── ADD MANUAL USER ─────────────────────────────────────────
-function addManualUser(){
-  const email=document.getElementById('mu-email').value.trim().toLowerCase();
-  const pass =document.getElementById('mu-pass').value.trim();
-  const name =document.getElementById('mu-name').value.trim();
-  const m=document.getElementById('mu-msg');m.className='fmsg';
+/* ─── PANELS ─── */
+const panelTitles = {
+  videos     : { h: 'Mis <em>Videos</em>',     p: 'Aprende diseño e inteligencia artificial con Joss Design.' },
+  instalacion: { h: '<em>Instalación</em>',     p: 'Guías y recursos para configurar tu entorno.' },
+  redes      : { h: 'Nuestras <em>Redes</em>',  p: 'Conéctate con Joss Design en todas las plataformas.' }
+};
+function showPanel(name, el) {
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  el.classList.add('active');
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  const t = panelTitles[name];
+  document.getElementById('page-h1').innerHTML = t.h;
+  document.getElementById('page-p').textContent = t.p;
+  closeSidebar();
+}
 
-  if(!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))
-    return showMuMsg('Ingresa un correo válido.','err');
-  if(pass.length<6)
-    return showMuMsg('La contraseña debe tener al menos 6 caracteres.','err');
+/* ─── MODAL ─── */
+function openCheckout() {
+  document.getElementById('modal-bg').classList.add('show');
+  switchTab('buy');
+  showStep('step-billing');
+  refreshPrices();
+}
+function openLogin() {
+  document.getElementById('modal-bg').classList.add('show');
+  switchTab('login');
+}
+function closeModal() {
+  document.getElementById('modal-bg').classList.remove('show');
+}
+function modalBgClick(e) {
+  if (e.target === document.getElementById('modal-bg')) closeModal();
+}
+function switchTab(tab) {
+  document.getElementById('tab-buy').classList.toggle('active', tab === 'buy');
+  document.getElementById('tab-login').classList.toggle('active', tab === 'login');
+  showStep(tab === 'buy' ? 'step-billing' : 'step-login');
+}
+function showStep(id) {
+  document.querySelectorAll('.modal-step').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+function refreshPrices() {
+  const p = db.get('price') || PRICE_TXT;
+  ['price-show','price-total','pp-price','yape-price','plin-price'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) {
+      if (id === 'price-show' || id === 'price-total') el.textContent = p;
+      else el.textContent = '💰 ' + p;
+    }
+  });
+}
 
-  const users=getUsers();
-  if(users[email]&&users[email].role==='approved')
-    return showMuMsg('Este correo ya tiene acceso activo.','err');
+/* ─── AFILIADO ─── */
+function toggleAff() {
+  const f = document.getElementById('aff-field');
+  f.style.display = f.style.display === 'none' ? 'block' : 'none';
+}
 
-  users[email]={pass,role:'approved',since:new Date().toLocaleDateString('es'),method:'manual',name:name||email,order:'MANUAL-'+Date.now().toString(36).toUpperCase()};
+/* ─── BILLING ─── */
+let billingData = {};
+let currentOrder = '';
+let krReady = false;
+
+function goToPayment() {
+  const fname   = document.getElementById('b-fname').value.trim();
+  const lname   = document.getElementById('b-lname').value.trim();
+  const email   = document.getElementById('b-email').value.trim().toLowerCase();
+  const country = document.getElementById('b-country').value;
+  const pass    = document.getElementById('b-pass').value;
+  const aff     = document.getElementById('b-aff').value.trim().toUpperCase();
+  const msgEl   = document.getElementById('billing-msg');
+  msgEl.className = 'fmsg';
+
+  if (!fname || !lname)  return setMsg('billing-msg', 'Ingresa tu nombre completo.', 'err');
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setMsg('billing-msg', 'Ingresa un correo válido.', 'err');
+  if (!country)          return setMsg('billing-msg', 'Selecciona tu país.', 'err');
+  if (pass.length < 6)   return setMsg('billing-msg', 'La contraseña debe tener al menos 6 caracteres.', 'err');
+
+  const users = getUsers();
+  if (users[email]) {
+    if (users[email].role === 'approved') return setMsg('billing-msg', 'Este correo ya tiene acceso. Usa la pestaña "Ya tengo acceso".', 'inf');
+    if (users[email].role === 'pending')  return setMsg('billing-msg', 'Ya tienes una solicitud pendiente. Usa "Ya tengo acceso" para ver el estado.', 'warn');
+  }
+  if (aff) {
+    const affs = getAffs();
+    if (!affs.hasOwnProperty(aff)) return setMsg('billing-msg', 'Código de afiliado no válido.', 'err');
+  }
+
+  billingData = { fname, lname, email, country, phone: document.getElementById('b-phone').value.trim(), pass, aff };
+  currentOrder = 'JD-' + Date.now().toString(36).toUpperCase() + '-' + Math.random().toString(36).substring(2,6).toUpperCase();
+  document.getElementById('order-num-display').textContent = currentOrder;
+
+  showStep('step-payment');
+  selectPM('izipay');
+}
+function goBackToBilling() {
+  showStep('step-billing');
+}
+
+/* ─── PAYMENT METHOD ─── */
+let selectedPM = 'izipay';
+function selectPM(m) {
+  selectedPM = m;
+  ['izipay','paypal','yape','plin'].forEach(pm => {
+    document.getElementById('pm-' + pm).classList.toggle('sel', pm === m);
+    document.getElementById('pm-detail-' + pm).style.display = pm === m ? 'block' : 'none';
+  });
+  const isManual = m !== 'izipay';
+  document.getElementById('order-box').style.display          = isManual ? 'flex'  : 'none';
+  document.getElementById('manual-submit-wrap').style.display = isManual ? 'block' : 'none';
+  document.getElementById('wa-section').style.display         = 'none';
+  document.getElementById('btn-manual').disabled              = false;
+  setMsg('pay-msg', '', '');
+
+  const labels = { paypal: 'Confirmar — abrir PayPal', yape: 'Ya yapié — enviar comprobante', plin: 'Ya pagué con Plin' };
+  if (isManual) document.getElementById('btn-manual-label').textContent = labels[m] || 'Confirmar';
+  if (m === 'izipay') initCardInputs();
+}
+
+/* ─── CURRENCY CONVERSION ─── */
+const CURRENCIES = {
+  PE: { flag:'🇵🇪', code:'PEN', symbol:'S/',  name:'Soles',             rate:0.04,   cents:4    },
+  CO: { flag:'🇨🇴', code:'COP', symbol:'$',   name:'Pesos colombianos', rate:42,     cents:4200  },
+  MX: { flag:'🇲🇽', code:'MXN', symbol:'$',   name:'Pesos mexicanos',   rate:0.17,   cents:17    },
+  AR: { flag:'🇦🇷', code:'ARS', symbol:'$',   name:'Pesos argentinos',  rate:9.5,    cents:950   },
+  CL: { flag:'🇨🇱', code:'CLP', symbol:'$',   name:'Pesos chilenos',    rate:9.5,    cents:950   },
+  EC: { flag:'🇪🇨', code:'USD', symbol:'US$', name:'Dólares',           rate:0.01,   cents:1     },
+  US: { flag:'🇺🇸', code:'USD', symbol:'US$', name:'Dólares',           rate:0.01,   cents:1     },
+  ES: { flag:'🇪🇸', code:'EUR', symbol:'€',   name:'Euros',             rate:0.009,  cents:1     },
+  OTHER:{ flag:'🌍',code:'USD', symbol:'US$', name:'Dólares',           rate:0.01,   cents:1     }
+};
+let currentCurrency = CURRENCIES['PE'];
+
+function updateCurrency(countryCode) {
+  const c = CURRENCIES[countryCode] || CURRENCIES['PE'];
+  currentCurrency = c;
+  // Format amount
+  const baseAmount = 1; // $0.01 USD equivalent (rate multiplies this)
+  const converted = (baseAmount * c.rate);
+  let formatted;
+  if (c.code === 'CLP' || c.code === 'ARS') {
+    formatted = c.symbol + ' ' + Math.round(converted).toLocaleString('es');
+  } else if (c.code === 'COP') {
+    formatted = c.symbol + ' ' + Math.round(converted).toLocaleString('es');
+  } else {
+    formatted = c.symbol + ' ' + converted.toFixed(2);
+  }
+  // Update currency box
+  document.getElementById('currency-flag').textContent = c.flag;
+  document.getElementById('currency-amount').textContent = formatted;
+  document.getElementById('currency-sub').textContent = 'Precio en ' + c.name;
+  // Update pay button
+  document.getElementById('btn-pay-card-label').textContent = 'Pagar ' + formatted;
+  // Update manual method prices
+  ['pp-price','yape-price','plin-price'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = '💰 ' + formatted;
+  });
+  // Update order summary
+  ['price-show','price-total'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = formatted;
+  });
+}
+
+/* ─── CARD VISUAL UPDATER ─── */
+function initCardInputs() {
+  const pan  = document.getElementById('cf-pan');
+  const exp  = document.getElementById('cf-exp');
+  const cvv  = document.getElementById('cf-cvv');
+  const name = document.getElementById('cf-name');
+  if (!pan) return;
+
+  pan.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').substring(0,16);
+    this.value = v.replace(/(.{4})/g,'$1 ').trim();
+    document.getElementById('cv-number').textContent =
+      (v + '????????????????').substring(0,16).replace(/(.{4})/g,'$1 ').trim()
+      .replace(/\?/g,'•');
+    // detect card type
+    const net = document.getElementById('cv-network');
+    if (/^4/.test(v)) {
+      net.innerHTML = '<svg viewBox="0 0 60 38" fill="none" height="28"><rect width="60" height="38" rx="4" fill="#1a1f71"/><text x="30" y="26" text-anchor="middle" font-family="Arial" font-size="16" font-weight="bold" fill="white" letter-spacing="1">VISA</text></svg>';
+    } else if (/^5[1-5]/.test(v) || /^2[2-7]/.test(v)) {
+      net.innerHTML = '<svg viewBox="0 0 50 30" fill="none" height="28"><circle cx="18" cy="15" r="12" fill="#eb001b" opacity=".85"/><circle cx="32" cy="15" r="12" fill="#f79e1b" opacity=".85"/></svg>';
+    } else if (/^3[47]/.test(v)) {
+      net.innerHTML = '<svg viewBox="0 0 60 38" fill="none" height="28"><rect width="60" height="38" rx="4" fill="#2671b9"/><text x="30" y="26" text-anchor="middle" font-family="Arial" font-size="9" font-weight="bold" fill="white">AMEX</text></svg>';
+    }
+  });
+
+  exp.addEventListener('input', function() {
+    let v = this.value.replace(/\D/g,'').substring(0,4);
+    if (v.length >= 2) v = v.substring(0,2) + '/' + v.substring(2);
+    this.value = v;
+    const parts = v.split('/');
+    document.getElementById('cv-exp').textContent = v.length >= 4 ? v : (parts[0]||'MM') + '/' + (parts[1]||'AA');
+  });
+
+  cvv.addEventListener('focus', () => document.getElementById('card-visual').style.transform = 'rotateY(180deg)');
+  cvv.addEventListener('blur',  () => document.getElementById('card-visual').style.transform = 'rotateY(0deg)');
+
+  name.addEventListener('input', function() {
+    document.getElementById('cv-holder').textContent = this.value.toUpperCase() || 'NOMBRE APELLIDO';
+  });
+}
+
+/* ─── CARD SUBMIT ─── */
+async function submitCardPayment() {
+  const pan  = document.getElementById('cf-pan').value.replace(/\s/g,'');
+  const exp  = document.getElementById('cf-exp').value;
+  const cvv  = document.getElementById('cf-cvv').value;
+  const name = document.getElementById('cf-name').value.trim();
+  const errEl = document.getElementById('iz-err');
+  errEl.classList.remove('show');
+
+  if (pan.length < 15)   { errEl.textContent = 'Número de tarjeta incompleto.'; errEl.classList.add('show'); return; }
+  if (!/^\d{2}\/\d{2}$/.test(exp)) { errEl.textContent = 'Fecha de vencimiento inválida (MM/AA).'; errEl.classList.add('show'); return; }
+  if (cvv.length < 3)    { errEl.textContent = 'CVV inválido.'; errEl.classList.add('show'); return; }
+  if (name.length < 3)   { errEl.textContent = 'Ingresa el nombre del titular.'; errEl.classList.add('show'); return; }
+
+  const btn = document.getElementById('btn-pay-card');
+  btn.disabled = true;
+  btn.innerHTML = '<div class="spinner" style="width:18px;height:18px;border-width:2px"></div> Procesando...';
+
+  try {
+    // Get formToken from backend
+    const res = await fetch(BACKEND + '/create-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        amount   : currentCurrency.cents,
+        currency : currentCurrency.code === 'COP' ? 'PEN' : 'PEN', // Izipay PE only accepts PEN
+        orderId  : currentOrder,
+        customer : { email: billingData.email, firstName: billingData.fname, lastName: billingData.lname }
+      })
+    });
+    if (!res.ok) throw new Error('Backend error ' + res.status);
+    const data = await res.json();
+    if (!data.formToken) throw new Error('Sin formToken');
+
+    // Set token and trigger KR
+    await KR.setFormConfig({ formToken: data.formToken });
+
+    KR.onSubmit(pd => {
+      if (pd.clientAnswer && pd.clientAnswer.orderStatus === 'PAID') {
+        handleIzipaySuccess();
+      } else {
+        const msg = pd.clientAnswer?.transactions?.[0]?.errorMessage || 'Pago rechazado. Verifica los datos de tu tarjeta.';
+        errEl.textContent = msg;
+        errEl.classList.add('show');
+        btn.disabled = false;
+        btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span id="btn-pay-card-label">Reintentar pago</span>';
+      }
+      return false;
+    });
+
+    // Trigger KR submit programmatically
+    await KR.submit();
+
+  } catch (err) {
+    console.error('Card payment error:', err);
+    errEl.textContent = 'Error al procesar el pago. Por favor usa Yape, Plin o PayPal.';
+    errEl.classList.add('show');
+    btn.disabled = false;
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="14" height="14"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg> <span id="btn-pay-card-label">Reintentar</span>';
+  }
+}
+
+function handleIzipaySuccess() {
+  const users = getUsers();
+  users[billingData.email] = {
+    pass: billingData.pass, role: 'approved',
+    since: new Date().toLocaleDateString('es'),
+    method: 'izipay', order: currentOrder,
+    name: billingData.fname + ' ' + billingData.lname
+  };
   saveUsers(users);
-  // If they had a pending request, remove it
-  const arr=getPending().filter(p=>p.email!==email);savePending(arr);
-
-  addLog('Usuario manual: '+email+(name?' ('+name+')':''),'lg');
-  showToast('Acceso dado a '+email);
-  document.getElementById('mu-email').value='';
-  document.getElementById('mu-pass').value='';
-  document.getElementById('mu-name').value='';
-  showMuMsg('✅ Acceso activado para '+email+'. Ya puede ingresar con la contraseña indicada.','ok');
-  renderAll();
-  setTimeout(()=>{document.getElementById('mu-msg').className='fmsg';},5000);
+  if (billingData.aff) {
+    const affs = getAffs();
+    affs[billingData.aff] = (affs[billingData.aff] || 0) + 1;
+    saveAffs(affs);
+  }
+  saveSession(billingData.email);
+  addLog('Pago Izipay: ' + billingData.email, 'lg');
+  showStep('step-success');
+  setTimeout(() => { closeModal(); setLoggedIn(billingData.email); }, 2500);
 }
-function showMuMsg(txt,type){const m=document.getElementById('mu-msg');m.className='fmsg '+type;m.textContent=txt;}
 
-// ─── RENDER ──────────────────────────────────────────────────
-function renderAll(){renderStats();renderGrid();}
+/* ─── MANUAL PAYMENT ─── */
+function submitManual() {
+  setMsg('pay-msg', '', '');
 
-function renderStats(){
-  const u=getUsers(),p=getPending(),a=getAffs();
-  const apr=Object.entries(u).filter(([,v])=>v.role==='approved'&&v.pass!=='admin1234').length;
-  document.getElementById('stats-row').innerHTML=`
-    <div class="sc sy"><div class="sc-n">${p.length}</div><div class="sc-l">Pendientes</div></div>
-    <div class="sc sg"><div class="sc-n">${apr}</div><div class="sc-l">Con Acceso</div></div>
-    <div class="sc sp"><div class="sc-n">${Object.keys(a).length}</div><div class="sc-l">Afiliados</div></div>
-    <div class="sc sa"><div class="sc-n">${apr+p.length}</div><div class="sc-l">Total</div></div>
+  // Save pending
+  const pending = getPending();
+  if (!pending.find(p => p.order === currentOrder)) {
+    pending.push({
+      email: billingData.email, pass: billingData.pass,
+      method: selectedPM, affiliate: billingData.aff || null,
+      order: currentOrder, name: billingData.fname + ' ' + billingData.lname,
+      country: billingData.country, phone: billingData.phone,
+      date: new Date().toLocaleString('es'), ts: Date.now()
+    });
+    savePending(pending);
+  }
+  if (billingData.aff) {
+    const affs = getAffs();
+    affs[billingData.aff] = (affs[billingData.aff] || 0) + 1;
+    saveAffs(affs);
+  }
+  // Mark as pending user
+  const users = getUsers();
+  if (!users[billingData.email]) {
+    users[billingData.email] = {
+      pass: billingData.pass, role: 'pending',
+      since: new Date().toLocaleDateString('es'),
+      method: selectedPM, order: currentOrder,
+      name: billingData.fname + ' ' + billingData.lname
+    };
+    saveUsers(users);
+  }
+
+  const mN = { paypal: 'PayPal', yape: 'Yape', plin: 'Plin' };
+  const waMsg = encodeURIComponent(
+    'Hola Joss Design! 👋\n\n' +
+    'Acabo de realizar el pago del curso.\n\n' +
+    '👤 Nombre: ' + billingData.fname + ' ' + billingData.lname + '\n' +
+    '📧 Correo: ' + billingData.email + '\n' +
+    '🔢 Orden: ' + currentOrder + '\n' +
+    '💳 Método: ' + (mN[selectedPM] || selectedPM) + '\n\n' +
+    'Adjunto mi comprobante. ¡Quedo atento!'
+  );
+  if (selectedPM === 'paypal') window.open('https://www.paypal.com/paypalme/jossdesign', '_blank');
+  document.getElementById('wa-btn').href = 'https://wa.me/51915150077?text=' + waMsg;
+  document.getElementById('wa-section').style.display = 'block';
+  document.getElementById('btn-manual').disabled = true;
+  setMsg('pay-msg', '✅ Solicitud guardada. Envía el comprobante por WhatsApp.', 'ok');
+}
+
+/* ─── LOGIN ─── */
+function doLogin() {
+  const email = document.getElementById('l-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('l-pass').value;
+  setMsg('l-msg', '', '');
+  if (!email || !pass) return setMsg('l-msg', 'Completa todos los campos.', 'err');
+  const users = getUsers();
+  if (!users[email]) return setMsg('l-msg', 'Correo no encontrado. ¿Ya enviaste el comprobante?', 'err');
+  if (users[email].pass !== pass) return setMsg('l-msg', 'Contraseña incorrecta.', 'err');
+  if (users[email].role === 'pending') {
+    document.getElementById('pending-order-badge').textContent = 'Orden: ' + (users[email].order || '—');
+    showStep('step-pending');
+    return;
+  }
+  if (users[email].role !== 'approved') return setMsg('l-msg', 'Acceso denegado.', 'err');
+  saveSession(email);
+  closeModal();
+  closeSidebar();
+  setLoggedIn(email);
+}
+function doLogout() {
+  saveSession(null);
+  location.reload();
+}
+function setLoggedIn(email) {
+  document.getElementById('sb-user').classList.add('show');
+  document.getElementById('sb-email').textContent = email;
+  document.getElementById('sb-actions').style.display = 'none';
+  document.getElementById('btn-logout').classList.add('show');
+  unlockCards();
+}
+
+/* ─── LOCK / UNLOCK ─── */
+function lockCards() {
+  ['vc1','vc2','vc3'].forEach(id => {
+    const c = document.getElementById(id);
+    if (!c || c.querySelector('.lock-overlay')) return;
+    c.classList.add('locked');
+    const lo = document.createElement('div');
+    lo.className = 'lock-overlay';
+    lo.innerHTML =
+      '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>' +
+      '<span>Contenido exclusivo</span>' +
+      '<button class="lo-btn" onclick="openCheckout()">' +
+        '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 001.99 1.61h9.72a2 2 0 001.99-1.61L23 6H6"/></svg>' +
+        'Comprar' +
+      '</button>';
+    c.appendChild(lo);
+  });
+}
+function unlockCards() {
+  document.querySelectorAll('.video-card').forEach(c => {
+    c.classList.remove('locked');
+    c.classList.add('unlocked');
+    const lo = c.querySelector('.lock-overlay');
+    if (lo) lo.remove();
+  });
+}
+
+/* ─── HELPERS ─── */
+function setMsg(id, txt, type) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.className = 'fmsg' + (type ? ' ' + type : '');
+  el.textContent = txt;
+}
+function copyTxt(txt, btn) {
+  navigator.clipboard.writeText(txt).catch(() => {
+    const t = document.createElement('textarea');
+    t.value = txt; document.body.appendChild(t); t.select();
+    document.execCommand('copy'); document.body.removeChild(t);
+  });
+  const orig = btn.innerHTML;
+  btn.innerHTML = '✓ Copiado'; btn.classList.add('copied');
+  setTimeout(() => { btn.innerHTML = orig; btn.classList.remove('copied'); }, 2000);
+}
+
+/* ─── SECRET LOGO TAP → ADMIN ─── */
+let tapCount = 0, tapTimer = null;
+function handleLogoTap() {
+  tapCount++;
+  clearTimeout(tapTimer);
+  tapTimer = setTimeout(() => { tapCount = 0; }, 2000);
+  if (tapCount >= 3) {
+    tapCount = 0;
+    clearTimeout(tapTimer);
+    document.getElementById('adm-pass-bg').classList.add('show');
+    document.getElementById('adm-pass-input').value = '';
+    document.getElementById('adm-pass-err').classList.remove('show');
+    setTimeout(() => document.getElementById('adm-pass-input').focus(), 100);
+  }
+}
+function closeAdminPass() {
+  document.getElementById('adm-pass-bg').classList.remove('show');
+}
+function checkAdminPass() {
+  const val = document.getElementById('adm-pass-input').value;
+  const savedPwd = db.get('admin_pwd') || ADMIN_PWD;
+  if (val === savedPwd) {
+    closeAdminPass();
+    openAdminPanel();
+  } else {
+    document.getElementById('adm-pass-err').classList.add('show');
+    document.getElementById('adm-pass-input').value = '';
+    document.getElementById('adm-pass-input').focus();
+    setTimeout(() => document.getElementById('adm-pass-err').classList.remove('show'), 2500);
+  }
+}
+
+/* ─── ADMIN PANEL ─── */
+function openAdminPanel() {
+  document.getElementById('admin-panel').classList.add('show');
+  renderAdmin();
+  const el = document.getElementById('adm-time');
+  const tick = () => el.textContent = new Date().toLocaleString('es', { weekday:'short', day:'2-digit', month:'short', hour:'2-digit', minute:'2-digit' });
+  tick();
+  setInterval(tick, 30000);
+}
+function exitAdmin() {
+  document.getElementById('admin-panel').classList.remove('show');
+}
+
+function renderAdmin() {
+  const users   = getUsers();
+  const pending = getPending();
+  const affs    = getAffs();
+  const log     = getLog();
+  const approved = Object.entries(users).filter(([,u]) => u.role === 'approved');
+  const mL = { izipay:'Izipay', paypal:'PayPal', yape:'Yape', plin:'Plin', manual:'Manual' };
+  const chkSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="9" height="9"><polyline points="20 6 9 17 4 12"/></svg>';
+
+  // Stats
+  document.getElementById('adm-stats').innerHTML = `
+    <div class="stat s-ye"><div class="stat-n">${pending.length}</div><div class="stat-l">Pendientes</div></div>
+    <div class="stat s-gr"><div class="stat-n">${approved.length}</div><div class="stat-l">Con Acceso</div></div>
+    <div class="stat s-pu"><div class="stat-n">${Object.keys(affs).length}</div><div class="stat-l">Afiliados</div></div>
+    <div class="stat s-ac"><div class="stat-n">${approved.length + pending.length}</div><div class="stat-l">Total</div></div>
   `;
-}
 
-function renderGrid(){
-  const users=getUsers(),pending=getPending(),affs=getAffs(),log=getLog();
-  const approved=Object.entries(users).filter(([,u])=>u.role==='approved');
-  const mL={izipay:'Izipay',card:'Visa',paypal:'PayPal',yape:'Yape',plin:'Plin',manual:'Manual'};
-  const chk='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" width="9" height="9"><polyline points="20 6 9 17 4 12"/></svg>';
-
-  const pendHTML=pending.length===0
-    ?'<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><polyline points="20 6 9 17 4 12"/></svg><div>Sin solicitudes pendientes</div></div>'
-    :pending.map((p,i)=>`
+  // Pending
+  const pendHTML = pending.length === 0
+    ? '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><polyline points="20 6 9 17 4 12"/></svg><div>Sin solicitudes pendientes</div></div>'
+    : pending.map((p, i) => `
       <div class="pi-item">
-        <div class="pi-l">
-          <div class="pi-em">${p.email}</div>
-          ${p.name?'<div class="pi-name">'+p.name+'</div>':''}
+        <div class="pi-left">
+          <div class="pi-email">${p.email}</div>
+          ${p.name ? '<div class="pi-name">' + p.name + '</div>' : ''}
           <div class="pi-date">${p.date}</div>
-          <div class="pi-order">${p.order||'—'}</div>
-          <span class="pi-method">${mL[p.method]||p.method}${p.affiliate?' · '+p.affiliate:''}</span>
+          <div class="pi-order">${p.order || '—'}</div>
+          <span class="pi-method">${mL[p.method] || p.method}${p.affiliate ? ' · ' + p.affiliate : ''}</span>
         </div>
         <div class="pi-acts">
-          <button class="bapp" onclick="approvePending(${i})">
+          <button class="b-app" onclick="approvePending(${i})">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><polyline points="20 6 9 17 4 12"/></svg>
             Aprobar
           </button>
-          <button class="brej" onclick="rejectPending(${i})">
+          <button class="b-rej" onclick="rejectPending(${i})">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="10" height="10"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
           </button>
         </div>
       </div>`).join('');
 
-  const filteredApproved=approved.filter(([e])=>e!=='admin@jossdesign.com');
-  const aprHTML=filteredApproved.length===0
-    ?'<div class="empty-st"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><div>Ningún usuario aprobado aún</div></div>'
-    :filteredApproved.map(([email,u])=>{
-      const m=u.method||'—';
-      const badgeClass=m==='manual'?'manual':m==='izipay'?'izipay':m==='yape'?'yape':m==='plin'?'plin':m==='paypal'?'paypal':'manual';
-      return`<div class="apr-item">
-        <div class="chk">${chk}</div>
-        <div class="apr-em">${email}</div>
-        <span class="apr-badge ${badgeClass}">${mL[m]||m}</span>
-        <div class="apr-dt">${u.since||'—'}</div>
-        <button class="brev" onclick="revokeAccess('${email}')">Revocar</button>
-      </div>`;
-    }).join('');
+  // Approved
+  const aprHTML = approved.length === 0
+    ? '<div class="empty-state"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" display="block"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><div>Ningún usuario aprobado aún</div></div>'
+    : approved.map(([email, u]) => {
+        const m = u.method || 'manual';
+        return `<div class="apr-item">
+          <div class="apr-check">${chkSvg}</div>
+          <div class="apr-email">${email}</div>
+          <span class="apr-badge ${m}">${mL[m] || m}</span>
+          <div class="apr-date">${u.since || '—'}</div>
+          <button class="b-rev" onclick="revokeUser('${email}')">Revocar</button>
+        </div>`;
+      }).join('');
 
-  const affHTML=Object.entries(affs).map(([c,n])=>`
+  // Affiliates
+  const affHTML = Object.entries(affs).map(([code, uses]) => `
     <div class="aff-item">
-      <span class="aff-code">${c}</span>
-      <span class="aff-uses">${n} uso${n!==1?'s':''}</span>
-      <button class="brev" onclick="delAff('${c}')">Eliminar</button>
+      <span class="aff-code">${code}</span>
+      <span class="aff-uses">${uses} uso${uses !== 1 ? 's' : ''}</span>
+      <button class="b-rev" onclick="deleteAff('${code}')">Eliminar</button>
     </div>`).join('');
 
-  const logHTML=log.length===0
-    ?'<div class="empty-st"><div>Sin actividad reciente</div></div>'
-    :log.slice(0,12).map(l=>`<div class="log-item"><div class="ld ${l.type}"></div><div class="lt">${l.txt}</div><div class="ltime">${l.time}</div></div>`).join('');
+  // Log
+  const logHTML = log.length === 0
+    ? '<div class="empty-state"><div>Sin actividad reciente</div></div>'
+    : log.slice(0, 12).map(l => `
+      <div class="log-item">
+        <div class="log-dot ${l.type}"></div>
+        <div class="log-txt">${l.txt}</div>
+        <div class="log-time">${l.time}</div>
+      </div>`).join('');
 
-  document.getElementById('main-grid').innerHTML=`
-    <div class="card full">
-      <div class="card-title"><span class="dot dy"></span>Solicitudes pendientes (${pending.length})</div>
+  document.getElementById('adm-grid').innerHTML = `
+    <div class="adm-card full">
+      <div class="adm-card-title"><span class="dot d-ye"></span>Solicitudes pendientes (${pending.length})</div>
       <div class="pi-list">${pendHTML}</div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="dot dg"></span>Usuarios con acceso (${filteredApproved.length})</div>
+    <div class="adm-card">
+      <div class="adm-card-title"><span class="dot d-gr"></span>Usuarios con acceso (${approved.length})</div>
       <div class="apr-list">${aprHTML}</div>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="dot dp"></span>Códigos de afiliado</div>
+    <div class="adm-card">
+      <div class="adm-card-title"><span class="dot d-pu"></span>Afiliados</div>
       ${affHTML}
       <button class="btn-add-aff" onclick="addAff()">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="11" height="11"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Agregar código
       </button>
     </div>
-    <div class="card">
-      <div class="card-title"><span class="dot da"></span>Actividad reciente</div>
+    <div class="adm-card">
+      <div class="adm-card-title"><span class="dot d-ac"></span>Actividad reciente</div>
       <div class="log-list">${logHTML}</div>
     </div>
-    <div class="card full">
-      <div class="card-title">
+    <div class="adm-card full">
+      <div class="adm-card-title">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93a10 10 0 010 14.14M4.93 4.93a10 10 0 000 14.14"/></svg>
         Configuración
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
         <div>
-          <label class="flabel" style="margin-bottom:5px">Precio del curso (se muestra en el checkout)</label>
+          <label class="cfg-label">Precio del curso (texto visible)</label>
           <div class="cfg-row">
-            <input class="finput" id="price-inp" type="text" placeholder="Ej: $0.01 USD" value="${DB.get('price')||'$0.01'}"/>
+            <input class="adm-inp" id="price-inp" type="text" placeholder="Ej: S/ 49" value="${db.get('price') || PRICE_TXT}"/>
             <button class="btn-save" onclick="savePrice()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/></svg>
               Guardar
             </button>
           </div>
-          <div class="fmsg" id="price-msg"></div>
+          <div class="adm-msg" id="price-msg"></div>
         </div>
         <div>
-          <label class="flabel" style="margin-bottom:5px">Cambiar contraseña admin</label>
+          <label class="cfg-label">Cambiar contraseña del panel admin</label>
           <div class="cfg-row">
-            <input class="finput" id="new-pass-inp" type="password" placeholder="Nueva contraseña"/>
-            <button class="btn-save" onclick="changeAdminPass()" style="background:var(--accent2);box-shadow:none">
+            <input class="adm-inp" id="new-pwd-inp" type="password" placeholder="Nueva contraseña"/>
+            <button class="btn-save" style="background:var(--ac2)" onclick="changeAdminPwd()">
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="12" height="12"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0110 0v4"/></svg>
               Cambiar
             </button>
           </div>
-          <div class="fmsg" id="pass-msg"></div>
+          <div class="adm-msg" id="pwd-msg"></div>
         </div>
       </div>
     </div>
   `;
 }
 
-// ─── ACTIONS ─────────────────────────────────────────────────
-function approvePending(i){
-  const p=getPending()[i];const u=getUsers();
-  u[p.email]={pass:p.pass,role:'approved',since:new Date().toLocaleDateString('es'),method:p.method,affiliate:p.affiliate,order:p.order,name:p.name};
-  saveUsers(u);const arr=getPending();arr.splice(i,1);savePending(arr);
-  addLog('Aprobado: '+p.email,'lg');showToast('Acceso activado: '+p.email);renderAll();
+/* ─── ADMIN ACTIONS ─── */
+function quickApprove() {
+  const order = document.getElementById('qb-inp').value.trim().toUpperCase();
+  const m = document.getElementById('qb-msg');
+  m.className = 'adm-msg';
+  if (!order) { m.className = 'adm-msg err'; m.textContent = 'Escribe el número de orden.'; return; }
+  const pending = getPending();
+  const idx = pending.findIndex(p => p.order && p.order.toUpperCase() === order);
+  if (idx === -1) { m.className = 'adm-msg err'; m.textContent = 'Número de orden no encontrado.'; return; }
+  const p = pending[idx];
+  const u = getUsers();
+  u[p.email] = { pass: p.pass, role: 'approved', since: new Date().toLocaleDateString('es'), method: p.method, affiliate: p.affiliate, order: p.order, name: p.name };
+  saveUsers(u);
+  pending.splice(idx, 1);
+  savePending(pending);
+  addLog('Aprobado (orden): ' + p.email, 'lg');
+  document.getElementById('qb-inp').value = '';
+  m.className = 'adm-msg ok';
+  m.textContent = '✅ Acceso activado para ' + p.email;
+  toast('Acceso activado: ' + p.email, true);
+  renderAdmin();
+  setTimeout(() => { m.className = 'adm-msg'; }, 5000);
 }
-function rejectPending(i){
-  const p=getPending()[i];
-  if(!confirm('¿Rechazar solicitud de '+p.email+'?'))return;
-  const arr=getPending();arr.splice(i,1);savePending(arr);
-  // Remove pending status from users
-  const u=getUsers();if(u[p.email]&&u[p.email].role==='pending'){delete u[p.email];saveUsers(u);}
-  addLog('Rechazado: '+p.email,'lr');showToast('Solicitud rechazada',true);renderAll();
+
+function addManualUser() {
+  const email = document.getElementById('mu-email').value.trim().toLowerCase();
+  const pass  = document.getElementById('mu-pass').value.trim();
+  const name  = document.getElementById('mu-name').value.trim();
+  const m = document.getElementById('mu-msg');
+  m.className = 'adm-msg';
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { m.className = 'adm-msg err'; m.textContent = 'Correo inválido.'; return; }
+  if (pass.length < 6) { m.className = 'adm-msg err'; m.textContent = 'Contraseña mínimo 6 caracteres.'; return; }
+  const users = getUsers();
+  if (users[email] && users[email].role === 'approved') { m.className = 'adm-msg err'; m.textContent = 'Este correo ya tiene acceso activo.'; return; }
+  users[email] = { pass, role: 'approved', since: new Date().toLocaleDateString('es'), method: 'manual', name: name || email, order: 'MANUAL-' + Date.now().toString(36).toUpperCase() };
+  saveUsers(users);
+  const arr = getPending().filter(p => p.email !== email);
+  savePending(arr);
+  addLog('Usuario manual: ' + email, 'lg');
+  toast('Acceso dado a ' + email, true);
+  document.getElementById('mu-email').value = '';
+  document.getElementById('mu-pass').value  = '';
+  document.getElementById('mu-name').value  = '';
+  m.className = 'adm-msg ok';
+  m.textContent = '✅ Acceso activado para ' + email;
+  renderAdmin();
+  setTimeout(() => { m.className = 'adm-msg'; }, 5000);
 }
-function revokeAccess(email){
-  if(!confirm('¿Revocar acceso de '+email+'?'))return;
-  const u=getUsers();delete u[email];saveUsers(u);
-  addLog('Acceso revocado: '+email,'lr');showToast('Revocado',true);renderAll();
+
+function approvePending(i) {
+  const p = getPending()[i];
+  const u = getUsers();
+  u[p.email] = { pass: p.pass, role: 'approved', since: new Date().toLocaleDateString('es'), method: p.method, affiliate: p.affiliate, order: p.order, name: p.name };
+  saveUsers(u);
+  const arr = getPending(); arr.splice(i, 1); savePending(arr);
+  addLog('Aprobado: ' + p.email, 'lg');
+  toast('Acceso activado: ' + p.email, true);
+  renderAdmin();
 }
-function addAff(){
-  const c=prompt('Nuevo código de afiliado (mayúsculas, sin espacios):');
-  if(!c)return;const cl=c.trim().toUpperCase().replace(/\s+/g,'');if(!cl)return;
-  const a=getAffs();a[cl]=0;saveAffs(a);
-  addLog('Afiliado creado: '+cl,'ly');showToast('Código '+cl+' creado');renderAll();
+function rejectPending(i) {
+  const p = getPending()[i];
+  if (!confirm('¿Rechazar solicitud de ' + p.email + '?')) return;
+  const arr = getPending(); arr.splice(i, 1); savePending(arr);
+  const u = getUsers();
+  if (u[p.email] && u[p.email].role === 'pending') { delete u[p.email]; saveUsers(u); }
+  addLog('Rechazado: ' + p.email, 'lr');
+  toast('Solicitud rechazada', false);
+  renderAdmin();
 }
-function delAff(c){
-  if(!confirm('¿Eliminar código '+c+'?'))return;
-  const a=getAffs();delete a[c];saveAffs(a);
-  addLog('Afiliado eliminado: '+c,'ly');showToast('Eliminado',true);renderAll();
+function revokeUser(email) {
+  if (!confirm('¿Revocar acceso de ' + email + '?')) return;
+  const u = getUsers(); delete u[email]; saveUsers(u);
+  addLog('Revocado: ' + email, 'lr');
+  toast('Acceso revocado', false);
+  renderAdmin();
 }
-function savePrice(){
-  const v=document.getElementById('price-inp').value.trim();
-  DB.set('price',v);
-  const m=document.getElementById('price-msg');m.className='fmsg ok';m.textContent='✓ Precio guardado: '+v;
-  addLog('Precio: '+v,'ly');showToast('Precio guardado');
-  setTimeout(()=>{m.className='fmsg';},3000);
+function addAff() {
+  const code = prompt('Nuevo código de afiliado (mayúsculas, sin espacios):');
+  if (!code) return;
+  const clean = code.trim().toUpperCase().replace(/\s+/g, '');
+  if (!clean) return;
+  const a = getAffs(); a[clean] = 0; saveAffs(a);
+  addLog('Afiliado creado: ' + clean, 'ly');
+  toast('Código ' + clean + ' creado', true);
+  renderAdmin();
 }
-function changeAdminPass(){
-  const v=document.getElementById('new-pass-inp').value.trim();
-  if(v.length<6){const m=document.getElementById('pass-msg');m.className='fmsg err';m.textContent='Mínimo 6 caracteres.';return;}
-  const u=getUsers();u['admin@jossdesign.com'].pass=v;saveUsers(u);
-  const m=document.getElementById('pass-msg');m.className='fmsg ok';m.textContent='✓ Contraseña actualizada.';
-  addLog('Contraseña admin cambiada','ly');showToast('Contraseña actualizada');
-  document.getElementById('new-pass-inp').value='';
-  setTimeout(()=>{m.className='fmsg';},3000);
+function deleteAff(code) {
+  if (!confirm('¿Eliminar código ' + code + '?')) return;
+  const a = getAffs(); delete a[code]; saveAffs(a);
+  addLog('Afiliado eliminado: ' + code, 'ly');
+  toast('Eliminado', false);
+  renderAdmin();
 }
+function savePrice() {
+  const v = document.getElementById('price-inp').value.trim();
+  db.set('price', v);
+  const m = document.getElementById('price-msg');
+  m.className = 'adm-msg ok'; m.textContent = '✓ Precio guardado: ' + v;
+  addLog('Precio: ' + v, 'ly');
+  toast('Precio guardado', true);
+  setTimeout(() => { m.className = 'adm-msg'; }, 3000);
+}
+function changeAdminPwd() {
+  const v = document.getElementById('new-pwd-inp').value.trim();
+  if (v.length < 4) { const m = document.getElementById('pwd-msg'); m.className = 'adm-msg err'; m.textContent = 'Mínimo 4 caracteres.'; return; }
+  db.set('admin_pwd', v);
+  const m = document.getElementById('pwd-msg');
+  m.className = 'adm-msg ok'; m.textContent = '✓ Contraseña actualizada.';
+  document.getElementById('new-pwd-inp').value = '';
+  addLog('Contraseña admin cambiada', 'ly');
+  toast('Contraseña actualizada', true);
+  setTimeout(() => { m.className = 'adm-msg'; }, 3000);
+}
+
+/* ─── INIT ─── */
+(function init() {
+  const session = getSession();
+   const users   = getUsers();
+  if (session && users[session] && users[session].role === 'approved') {
+    setLoggedIn(session);
+  } else {
+    saveSession(null);
+    lockCards();
+  }
+  refreshPrices();
+
+  // Wire country selector → currency converter
+  const countryEl = document.getElementById('b-country');
+  if (countryEl) {
+    countryEl.addEventListener('change', function() {
+      updateCurrency(this.value || 'PE');
+    });
+  }
+
+  // Init card visual + inputs
+  setTimeout(initCardInputs, 100);
+})();
 </script>
 </body>
 </html>
